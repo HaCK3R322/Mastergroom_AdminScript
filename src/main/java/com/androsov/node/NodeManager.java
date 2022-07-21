@@ -81,13 +81,16 @@ public class NodeManager {
     public Node addNode(Node node) {
         node.setId(getNextNodeId());
         nodes.add(node);
+        logger.log(Level.INFO, "Added node: " + node);
         return node;
     }
     public void removeNode(Node node) {
         // remove this node from all other nodes' children
         for (Node n : nodes) {
+            logger.log(Level.INFO, "Removing  child node " + node.getId() + " from parent node " + n.getId());
             n.removeChildById(node.getId());
         }
+        logger.log(Level.INFO, "Removing node " + node.getId());
         nodes.remove(node);
     }
 

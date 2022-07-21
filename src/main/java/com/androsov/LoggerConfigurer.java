@@ -9,7 +9,7 @@ public class LoggerConfigurer {
     public static void configure(Logger logger) {
         try {
             SimpleFormatter formatter = new SimpleFormatter() {
-                private static final String format = "[%1$tF %1$tT] [%2$-7s] [%3$s] %4$s %n";
+                private static final String format = "[%1$tF %1$tT] [%3$-64s] [%2$-7s] %4$s %n";
 
                 @Override
                 public synchronized String format(LogRecord lr) {
