@@ -2,6 +2,7 @@ package com.androsov.gui;
 
 import com.androsov.LoggerConfigurer;
 import com.androsov.node.Node;
+import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
 
 import javax.swing.*;
@@ -13,8 +14,10 @@ import java.util.logging.Logger;
 public class ScriptFrame {
     JFrame frame;
     JPanel panel;
-    Node startNode;
+    JMenuBar menuBar;
     Logger logger;
+    NodeManager nodeManager;
+    Node currentNode;
 
     private Integer TEXT_FONT_SIZE = 20;
     private Integer BUTTONS_FONT_SIZE = 20;
@@ -34,10 +37,9 @@ public class ScriptFrame {
         this.BACKGROUND_COLOR = backgroundColor;
     }
 
-    public ScriptFrame(Node startNode) {
-        logger = LoggerConfigurer.getConfiguredLogger(ScriptFrame.class.getName());
-
-        this.startNode = startNode;
+    public ScriptFrame() {
+        logger = Logger.getLogger("AdminScriptLogger");
+        nodeManager = NodeManager.getInstance();
 
         frame = new JFrame();
         frame.setSize(FRAME_SIZE_X, FRAME_SIZE_Y);
@@ -47,30 +49,19 @@ public class ScriptFrame {
         panel = new JPanel();
         frame.add(panel);
 
-        drawNode(startNode);
-
-        // add menu bar that opens settings and is white and has black border at the bottom
-        JMenuBar menuBar = new JMenuBar();
+        // add menu bar to frame
+        menuBar = new JMenuBar();
         menuBar.setBackground(Color.WHITE);
         frame.setJMenuBar(menuBar);
+        configureMenuBarContent();
 
-        // add menu "Settings"
-        JMenu settingsMenu = new JMenu("Настройки");
-        settingsMenu.setBackground(Color.WHITE);
-        menuBar.add(settingsMenu);
-
-        // add menu item "Settings"
-        JMenuItem settingsMenuItem = new JMenuItem("Вид");
-        settingsMenuItem.addActionListener(e -> {
-            openSettingsFrame();
-        });
-        settingsMenu.add(settingsMenuItem);
-
+        currentNode = nodeManager.getFirstNode();
+        drawCurrentNode();
 
         frame.setVisible(true);
     }
 
-    public void drawNode(Node node) {
+    public void drawCurrentNode() {
         panel.removeAll();
 
         panel.setLayout(new GridLayout(1, 2));
@@ -79,7 +70,7 @@ public class ScriptFrame {
         phrasePanel.setLayout(new GridLayout(1, 1));
         JLabel phraseLabel = new JLabel();
         phrasePanel.add(phraseLabel);
-        phraseLabel.setText(getHtmlText(node.getPhrase(), TEXT_FONT_SIZE));
+        phraseLabel.setText(getHtmlText(currentNode.getPhrase(), TEXT_FONT_SIZE));
         phraseLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panel.add(phrasePanel);
         phraseLabel.setOpaque(true);
@@ -92,11 +83,12 @@ public class ScriptFrame {
         buttonsPanel.setBackground(BACKGROUND_COLOR);
 
         // buttons to connect to other nodes
-        for (NodePseudonym pseudonym : node.getChildren()) {
+        for (NodePseudonym pseudonym : currentNode.getChildren()) {
             JButton button = new JButton();
             button.setText(getHtmlText(pseudonym.getPhrase(), BUTTONS_FONT_SIZE));
             button.addActionListener(e -> {
-                drawNode(pseudonym.getNode());
+                currentNode = pseudonym.getNode();
+                drawCurrentNode();
             });
             buttonsPanel.add(button);
         }
@@ -105,8 +97,25 @@ public class ScriptFrame {
         frame.repaint();
     }
 
-    private String getHtmlText(String text, Integer fontSize) {
-        return "<html><p style='font-size:" + fontSize + "'>" + text + "</p></html>";
+    private void configureMenuBarContent() {
+        // add menu "Settings"
+        JMenu settingsMenu = new JMenu("Настройки");
+        settingsMenu.setBackground(Color.WHITE);
+        menuBar.add(settingsMenu);
+
+        // View
+        JMenuItem settingsMenuItem = new JMenuItem("Вид");
+        settingsMenuItem.addActionListener(e -> {
+            openSettingsFrame();
+        });
+        settingsMenu.add(settingsMenuItem);
+
+        // Redactor
+        JMenuItem redactorMenuItem = new JMenuItem("Редакитровать этот узел");
+        redactorMenuItem.addActionListener(e -> {
+            openRedactorFrame();
+        });
+        settingsMenu.add(redactorMenuItem);
     }
 
     private void openSettingsFrame() {
@@ -136,7 +145,7 @@ public class ScriptFrame {
         textFontSizePanel.add(textFontSizeSlider);
         textFontSizeSlider.addChangeListener(e -> {
             setTextFontSize(textFontSizeSlider.getValue());
-            drawNode(startNode);
+            drawCurrentNode();
         });
         settingsPanel.add(textFontSizePanel);
 
@@ -155,7 +164,7 @@ public class ScriptFrame {
         buttonsFontSizePanel.add(buttonsFontSizeSlider);
         buttonsFontSizeSlider.addChangeListener(e -> {
             setButtonsFontSize(buttonsFontSizeSlider.getValue());
-            drawNode(startNode);
+            drawCurrentNode();
         });
         settingsPanel.add(buttonsFontSizePanel);
 
@@ -187,10 +196,41 @@ public class ScriptFrame {
                 BACKGROUND_COLOR = Color.GRAY;
             }
             settingsFrame.dispose();
-            drawNode(startNode);
+            drawCurrentNode();
         });
         settingsPanel.add(saveSettingsButton);
 
         settingsFrame.setVisible(true);
+    }
+
+    private void openRedactorFrame() {
+        JFrame redactorFrame = new JFrame();
+        redactorFrame.setSize(SETTINGS_FRAME_SIZE_X, SETTINGS_FRAME_SIZE_Y);
+        redactorFrame.setResizable(false);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        redactorFrame.setLocation(dim.width / 2 - redactorFrame.getSize().width / 2, dim.height / 2 - redactorFrame.getSize().height / 2);
+
+        JPanel redactorPanel = new JPanel();
+        redactorPanel.setOpaque(true);
+        redactorPanel.setBackground(BACKGROUND_COLOR);
+        redactorPanel.setLayout(new GridLayout(4, 1));
+        redactorFrame.add(redactorPanel);
+
+        // text field for node's phrase
+        JPanel phrasePanel = new JPanel();
+        phrasePanel.setLayout(new GridLayout(1, 2));
+        JLabel phraseLabel = new JLabel();
+        phraseLabel.setText("Фраза");
+        phrasePanel.add(phraseLabel);
+        JTextField phraseTextField = new JTextField();
+        phraseTextField.setText(currentNode.getPhrase());
+        phrasePanel.add(phraseTextField);
+        redactorPanel.add(phrasePanel);
+
+        redactorFrame.setVisible(true);
+    }
+
+    private String getHtmlText(String text, Integer fontSize) {
+        return "<html><p style='font-size:" + fontSize + "'>" + text + "</p></html>";
     }
 }

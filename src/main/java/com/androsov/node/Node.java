@@ -13,8 +13,7 @@ import java.util.List;
 @ToString
 public class Node {
     @Expose
-    @Getter @Setter
-    private Integer id;
+    @Getter @Setter private Integer id;
     @Expose
     @Getter @Setter String phrase;
     @Getter @Setter private List<NodePseudonym> children;

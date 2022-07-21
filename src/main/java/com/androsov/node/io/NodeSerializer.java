@@ -2,7 +2,10 @@ package com.androsov.node.io;
 
 import com.androsov.LoggerConfigurer;
 import com.androsov.node.Node;
+import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
+import com.androsov.node.exceptions.NoNodesFoundException;
+import com.androsov.node.exceptions.NodeDeserializingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -20,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NodeSerializer {
-    private static Logger logger = LoggerConfigurer.getConfiguredLogger(NodeSerializer.class.getName());
+    private static Logger logger = Logger.getLogger("AdminScriptLogger");
 
 
     @AllArgsConstructor
@@ -48,7 +51,7 @@ public class NodeSerializer {
         logger.log(Level.INFO, "Serialized nodes to " + filepathNodes + " and " + filepathPseudonyms);
     }
 
-    public static List<Node> deserialize(String filePathNodes, String filePathPseudonyms) throws IOException {
+    public static List<Node> deserialize(String filePathNodes, String filePathPseudonyms) throws IOException, NodeDeserializingException, NoNodesFoundException {
         GsonBuilder gson = new GsonBuilder();
         Type listType = new com.google.gson.reflect.TypeToken<List<Node>>() {}.getType();
         Type listTypePseudonyms = new com.google.gson.reflect.TypeToken<List<NodeConnection>>() {}.getType();
@@ -59,8 +62,11 @@ public class NodeSerializer {
         String jsonInput = readFromFile(filePathNodes);
         List<Node> nodes = gsonBuilder.fromJson(jsonInput, listType);
         // init children lists
+        if(nodes.size() < 1) {
+            throw new NoNodesFoundException("No nodes found in file " + filePathNodes);
+        }
         for (Node node :
-             nodes) {
+                nodes) {
             node.setChildren(new ArrayList<>());
         }
         // log all nodes
@@ -88,6 +94,7 @@ public class NodeSerializer {
                 parent.addChildren(child, nodeConnection.getPhrase());
             } catch (NoSuchElementException e) {
                 logger.warning(e.getMessage());
+                throw new NodeDeserializingException(e.getMessage());
             }
         }
 
@@ -99,7 +106,7 @@ public class NodeSerializer {
         File file = new File(filePath);
 
         if (!file.exists()) {
-            file.createNewFile();
+            throw new FileNotFoundException("File " + filePath + " not found.");
         }
 
         Scanner scanner = new Scanner(file);
@@ -111,14 +118,10 @@ public class NodeSerializer {
         return stringBuilder.toString();
     }
 
-    private static void writeToFile(String filePath, String content) {
+    private static void writeToFile(String filePath, String content) throws IOException {
         File file = new File(filePath);
-        try {
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(content);
-            fileWriter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        FileWriter fileWriter = new FileWriter(file);
+        fileWriter.write(content);
+        fileWriter.close();
     }
 }

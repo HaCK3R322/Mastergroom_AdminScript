@@ -6,39 +6,35 @@ import java.util.Date;
 import java.util.logging.*;
 
 public class LoggerConfigurer {
-    public static Logger getConfiguredLogger(String loggerName) {
-        Logger logger = Logger.getLogger(loggerName);
-        configure(logger);
-        return logger;
-    }
-
     public static void configure(Logger logger) {
         try {
-            FileHandler fh = new FileHandler("logs/AdminScript " + getCurrentDate() + ".log");
-            FileHandler latestFh = new FileHandler("logs/latest.log");
-            ConsoleHandler ch = new ConsoleHandler();
-
             SimpleFormatter formatter = new SimpleFormatter() {
-                private static final String format = "[%1$tF %1$tT] [%2$-7s] %3$s %n";
+                private static final String format = "[%1$tF %1$tT] [%2$-7s] [%3$s] %4$s %n";
 
                 @Override
                 public synchronized String format(LogRecord lr) {
                     return String.format(format,
                             new Date(lr.getMillis()),
                             lr.getLevel().getLocalizedName(),
+                            lr.getSourceClassName() + "." + lr.getSourceMethodName(),
                             lr.getMessage()
                     );
                 }
             };
 
-            fh.setFormatter(formatter);
-            latestFh.setFormatter(formatter);
-            ch.setFormatter(formatter);
-
             logger.setUseParentHandlers(false);
-            logger.addHandler(fh);
-            logger.addHandler(latestFh);
-            logger.addHandler(ch);
+
+            FileHandler fileHandler = new FileHandler("logs/AdminScript " + getCurrentDate() + ".log", false);
+            fileHandler.setFormatter(formatter);
+            logger.addHandler(fileHandler);
+
+            FileHandler latestFileHandler = new FileHandler("logs/latest.log", false);
+            latestFileHandler.setFormatter(formatter);
+            logger.addHandler(latestFileHandler);
+
+            ConsoleHandler consoleHandler = new ConsoleHandler();
+            consoleHandler.setFormatter(formatter);
+            logger.addHandler(consoleHandler);
         } catch (IOException e) {
             logger.log(Level.WARNING, "Failed to configure logger");
             e.printStackTrace();
@@ -47,7 +43,6 @@ public class LoggerConfigurer {
 
     private static String getCurrentDate() {
         final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH-mm-ss";
-        String date = new SimpleDateFormat(DATE_FORMAT_NOW).format(new Date());
-        return date.toString();
+        return new SimpleDateFormat(DATE_FORMAT_NOW).format(new Date());
     }
 }
