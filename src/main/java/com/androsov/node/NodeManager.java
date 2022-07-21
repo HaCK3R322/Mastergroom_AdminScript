@@ -1,6 +1,5 @@
 package com.androsov.node;
 
-import com.androsov.LoggerConfigurer;
 import com.androsov.gui.ErrorMessageFrame;
 import com.androsov.node.exceptions.NoNodesFoundException;
 import com.androsov.node.exceptions.NodeDeserializingException;
@@ -69,7 +68,7 @@ public class NodeManager {
         } catch (NoNodesFoundException e) {
             logger.log(Level.WARNING, "No nodes found in file " + nodesPath + "; Is it first run?");
             nodes = new ArrayList<>();
-            addNode(new Node(getNextNodeId(), "This node generated automatically. You can add your own nodes here."));
+            addNode(new Node( "This node generated automatically. You can add your own nodes here."));
         }
     }
 
@@ -79,10 +78,16 @@ public class NodeManager {
         return nodes;
     }
 
-    public void addNode(Node node) {
+    public Node addNode(Node node) {
+        node.setId(getNextNodeId());
         nodes.add(node);
+        return node;
     }
     public void removeNode(Node node) {
+        // remove this node from all other nodes' children
+        for (Node n : nodes) {
+            n.removeChildById(node.getId());
+        }
         nodes.remove(node);
     }
 
@@ -113,7 +118,7 @@ public class NodeManager {
                 .orElse(0);
     }
 
-    public void saveNodes(String nodesPath, String connectionsPath) throws IOException {
+    public void saveNodes() throws IOException {
         NodeSerializer.serialize(nodes, nodesPath, connectionsPath);
     }
 
@@ -123,6 +128,6 @@ public class NodeManager {
 
     // sequence new node id
     public Integer getNextNodeId() {
-        return sequence++;
+        return ++sequence;
     }
 }

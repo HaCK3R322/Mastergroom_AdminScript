@@ -1,8 +1,6 @@
 package com.androsov.node.io;
 
-import com.androsov.LoggerConfigurer;
 import com.androsov.node.Node;
-import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
 import com.androsov.node.exceptions.NoNodesFoundException;
 import com.androsov.node.exceptions.NodeDeserializingException;
@@ -48,7 +46,7 @@ public class NodeSerializer {
         }
         writeToFile(filepathPseudonyms, gson.toJson(nodeConnections));
 
-        logger.log(Level.INFO, "Serialized nodes to " + filepathNodes + " and " + filepathPseudonyms);
+        logger.log(Level.INFO, "Nodes serialized to " + filepathNodes + " and " + filepathPseudonyms);
     }
 
     public static List<Node> deserialize(String filePathNodes, String filePathPseudonyms) throws IOException, NodeDeserializingException, NoNodesFoundException {
@@ -91,7 +89,7 @@ public class NodeSerializer {
                         .findFirst()
                         .orElseThrow(() -> new NoSuchElementException("CHILDING EXCEPTION: No node with id " + nodeConnection.getChildId()));
                 logger.info("Connecting node: parentId = " + parent.getId() + ", childId = " + child.getId() + ", phrase = " + nodeConnection.getPhrase());
-                parent.addChildren(child, nodeConnection.getPhrase());
+                parent.addChild(child, nodeConnection.getPhrase());
             } catch (NoSuchElementException e) {
                 logger.warning(e.getMessage());
                 throw new NodeDeserializingException(e.getMessage());

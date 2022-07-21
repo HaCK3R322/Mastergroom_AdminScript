@@ -29,6 +29,7 @@ public class Gui {
         JButton startButton = new JButton("Начать");
         startButton.addActionListener(e -> {
             new ScriptFrame();
+            frame.setVisible(false);
         });
         startButton.setFont(new Font("Arial", Font.PLAIN, 50));
         panel.add(startButton);
