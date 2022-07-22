@@ -41,7 +41,11 @@ public class ScriptFrame {
     private final Logger logger;
     private final NodeManager nodeManager;
     private Node currentNode;
+    // history of direct node moving (to go back)
     private final ArrayList<Node> lastNodes = new ArrayList<>();
+    // history of indirect node moving (to go back)
+    private final ArrayList<Node> lastLastNodes = new ArrayList<>();
+
 
     private Integer TEXT_FONT_SIZE = 20;
     private Integer BUTTONS_FONT_SIZE = 20;
@@ -106,6 +110,9 @@ public class ScriptFrame {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                     goToPreviousNode();
                     drawCurrentNode();
+                } if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    goToNextNode();
+                    drawCurrentNode();
                 }
             }
         });
@@ -114,7 +121,15 @@ public class ScriptFrame {
     private void goToPreviousNode() {
         if (lastNodes.size() > 1) {
             currentNode = lastNodes.get(lastNodes.size() - 2);
+            lastLastNodes.add(lastNodes.get(lastNodes.size() - 1));
             lastNodes.remove(lastNodes.size() - 1);
+        }
+    }
+    private void goToNextNode() {
+        if (lastLastNodes.size() > 0) {
+            lastNodes.add(lastLastNodes.get(lastLastNodes.size() - 1));
+            lastLastNodes.remove(lastLastNodes.size() - 1);
+            currentNode = lastNodes.get(lastNodes.size() - 1);
         }
     }
 
