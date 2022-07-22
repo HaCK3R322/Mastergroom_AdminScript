@@ -113,7 +113,6 @@ public class ScriptFrame {
 
     private void goToPreviousNode() {
         if (lastNodes.size() > 1) {
-            logger.log(Level.INFO, "Going to previous node");
             currentNode = lastNodes.get(lastNodes.size() - 2);
             lastNodes.remove(lastNodes.size() - 1);
         }
@@ -146,7 +145,6 @@ public class ScriptFrame {
             JButton button = new JButton();
             button.setText(getHtmlText(pseudonym.getPhrase(), BUTTONS_FONT_SIZE));
             button.addActionListener(e -> {
-                logger.log(Level.INFO, "Going to node " + pseudonym.getPhrase());
                 currentNode = pseudonym.getNode();
                 lastNodes.add(currentNode);
                 drawCurrentNode();
