@@ -6,12 +6,15 @@ import com.androsov.node.NodePseudonym;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class CenteredFrame  extends JFrame {
+class CenteredFrame extends JFrame {
     public CenteredFrame() {
         final int width = 800;
         final int height = 800;
@@ -32,20 +35,19 @@ class CenteredFrame  extends JFrame {
 }
 
 public class ScriptFrame {
-    JFrame frame;
-    JPanel panel;
-    JMenuBar menuBar;
-    Logger logger;
-    NodeManager nodeManager;
-    Node currentNode;
+    private final JFrame frame;
+    private final JPanel panel;
+    private final JMenuBar menuBar;
+    private final Logger logger;
+    private final NodeManager nodeManager;
+    private Node currentNode;
+    private final ArrayList<Node> lastNodes = new ArrayList<>();
 
     private Integer TEXT_FONT_SIZE = 20;
     private Integer BUTTONS_FONT_SIZE = 20;
     private Color BACKGROUND_COLOR = Color.WHITE;
-    private Integer FRAME_SIZE_X = 800;
-    private Integer FRAME_SIZE_Y = 800;
-    private Integer SETTINGS_FRAME_SIZE_X = 500;
-    private Integer SETTINGS_FRAME_SIZE_Y = 500;
+    private final Integer SETTINGS_FRAME_SIZE_X = 500;
+    private final Integer SETTINGS_FRAME_SIZE_Y = 500;
 
     public void setTextFontSize(Integer textFontSize) {
         this.TEXT_FONT_SIZE = textFontSize;
@@ -62,6 +64,8 @@ public class ScriptFrame {
         nodeManager = NodeManager.getInstance();
 
         frame = new JFrame();
+        int FRAME_SIZE_X = 800;
+        int FRAME_SIZE_Y = 800;
         frame.setSize(FRAME_SIZE_X, FRAME_SIZE_Y);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
@@ -77,12 +81,45 @@ public class ScriptFrame {
         configureMenuBarContent();
 
         currentNode = nodeManager.getFirstNode();
+        lastNodes.add(currentNode);
         drawCurrentNode();
+
+        addGoToPreviousNodeEvent();
 
         frame.setVisible(true);
     }
 
-    public void drawCurrentNode() {
+    private void addGoToPreviousNodeEvent() {
+        frame.setFocusable(true);
+
+        frame.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    goToPreviousNode();
+                    drawCurrentNode();
+                }
+            }
+        });
+    }
+
+    private void goToPreviousNode() {
+        if (lastNodes.size() > 1) {
+            logger.log(Level.INFO, "Going to previous node");
+            currentNode = lastNodes.get(lastNodes.size() - 2);
+            lastNodes.remove(lastNodes.size() - 1);
+        }
+    }
+
+    private void drawCurrentNode() {
         panel.removeAll();
 
         panel.setLayout(new GridLayout(1, 2));
@@ -104,11 +141,14 @@ public class ScriptFrame {
         buttonsPanel.setBackground(BACKGROUND_COLOR);
 
         // buttons to connect to other nodes
+        // every click saves to lastNodes list
         for (NodePseudonym pseudonym : currentNode.getChildren()) {
             JButton button = new JButton();
             button.setText(getHtmlText(pseudonym.getPhrase(), BUTTONS_FONT_SIZE));
             button.addActionListener(e -> {
+                logger.log(Level.INFO, "Going to node " + pseudonym.getPhrase());
                 currentNode = pseudonym.getNode();
+                lastNodes.add(currentNode);
                 drawCurrentNode();
             });
             buttonsPanel.add(button);
@@ -353,7 +393,7 @@ public class ScriptFrame {
 
     private class AddNewNodeFrame extends CenteredFrame {
         public AddNewNodeFrame() {
-            super(SETTINGS_FRAME_SIZE_X, SETTINGS_FRAME_SIZE_Y, false);
+            super(SETTINGS_FRAME_SIZE_X, SETTINGS_FRAME_SIZE_Y / 2, false);
 
             JPanel newNodePanel = new JPanel();
             newNodePanel.setLayout(new GridLayout(3, 1));
@@ -403,7 +443,7 @@ public class ScriptFrame {
 
     private class AddExistingNodeFrame extends CenteredFrame {
         public AddExistingNodeFrame() {
-            super(SETTINGS_FRAME_SIZE_X, SETTINGS_FRAME_SIZE_Y, false);
+            super(SETTINGS_FRAME_SIZE_X, SETTINGS_FRAME_SIZE_Y / 2, false);
 
             JPanel newNodePanel = new JPanel();
             newNodePanel.setLayout(new GridLayout(3, 1));
@@ -464,7 +504,7 @@ public class ScriptFrame {
 
     private class DeleteChildNodeFrame extends CenteredFrame {
         public DeleteChildNodeFrame() {
-            super(SETTINGS_FRAME_SIZE_X, SETTINGS_FRAME_SIZE_Y, false);
+            super(SETTINGS_FRAME_SIZE_X, SETTINGS_FRAME_SIZE_Y / 4, false);
 
             JPanel deleteChildNodePanel = new JPanel();
             deleteChildNodePanel.setLayout(new GridLayout(2, 1));
