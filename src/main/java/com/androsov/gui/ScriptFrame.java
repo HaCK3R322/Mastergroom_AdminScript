@@ -42,9 +42,9 @@ public class ScriptFrame {
     private final NodeManager nodeManager;
     private Node currentNode;
     // history of direct node moving (to go back)
-    private final ArrayList<Node> lastNodes = new ArrayList<>();
+    private final ArrayList<Node> lastNodesList = new ArrayList<>();
     // history of indirect node moving (to go back)
-    private final ArrayList<Node> lastLastNodes = new ArrayList<>();
+    private final ArrayList<Node> rollbackLastNodesList = new ArrayList<>();
 
 
     private Integer TEXT_FONT_SIZE = 20;
@@ -85,51 +85,48 @@ public class ScriptFrame {
         configureMenuBarContent();
 
         currentNode = nodeManager.getFirstNode();
-        lastNodes.add(currentNode);
+        lastNodesList.add(currentNode);
         drawCurrentNode();
 
-        addGoToPreviousNodeEvent();
+        addNodeKeyMovementsToFrame();
 
         frame.setVisible(true);
     }
 
-    private void addGoToPreviousNodeEvent() {
+    private void addNodeKeyMovementsToFrame() {
         frame.setFocusable(true);
 
         frame.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
+            public void keyTyped(KeyEvent e) {}
             @Override
-            public void keyPressed(KeyEvent e) {
-            }
+            public void keyPressed(KeyEvent e) {}
 
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    goToPreviousNode();
+                    goToPreviousClickedNode();
                     drawCurrentNode();
                 } if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    goToNextNode();
+                    goCloserToLastClickedNode();
                     drawCurrentNode();
                 }
             }
         });
     }
 
-    private void goToPreviousNode() {
-        if (lastNodes.size() > 1) {
-            currentNode = lastNodes.get(lastNodes.size() - 2);
-            lastLastNodes.add(lastNodes.get(lastNodes.size() - 1));
-            lastNodes.remove(lastNodes.size() - 1);
+    private void goToPreviousClickedNode() {
+        if (lastNodesList.size() > 1) {
+            currentNode = lastNodesList.get(lastNodesList.size() - 2);
+            rollbackLastNodesList.add(lastNodesList.get(lastNodesList.size() - 1));
+            lastNodesList.remove(lastNodesList.size() - 1);
         }
     }
-    private void goToNextNode() {
-        if (lastLastNodes.size() > 0) {
-            lastNodes.add(lastLastNodes.get(lastLastNodes.size() - 1));
-            lastLastNodes.remove(lastLastNodes.size() - 1);
-            currentNode = lastNodes.get(lastNodes.size() - 1);
+    private void goCloserToLastClickedNode() {
+        if (rollbackLastNodesList.size() > 0) {
+            lastNodesList.add(rollbackLastNodesList.get(rollbackLastNodesList.size() - 1));
+            rollbackLastNodesList.remove(rollbackLastNodesList.size() - 1);
+            currentNode = lastNodesList.get(lastNodesList.size() - 1);
         }
     }
 
@@ -161,7 +158,8 @@ public class ScriptFrame {
             button.setText(getHtmlText(pseudonym.getPhrase(), BUTTONS_FONT_SIZE));
             button.addActionListener(e -> {
                 currentNode = pseudonym.getNode();
-                lastNodes.add(currentNode);
+                lastNodesList.add(currentNode);
+                rollbackLastNodesList.clear();
                 drawCurrentNode();
             });
             buttonsPanel.add(button);
@@ -491,11 +489,11 @@ public class ScriptFrame {
             JComboBox<String> nodesListComboBox = new JComboBox<>();
             HashMap<String, Node> nodesMap = new HashMap<>();
             for (Node node : nodeManager.getNodes()) {
-                nodesListComboBox.addItem(node.getPhrase());
-                nodesMap.put(node.getPhrase(), node);
+                nodesListComboBox.addItem(node.toString());
+                nodesMap.put(node.toString(), node);
+                nodesListPanel.add(nodesListComboBox);
+                newNodePanel.add(nodesListPanel);
             }
-            nodesListPanel.add(nodesListComboBox);
-            newNodePanel.add(nodesListPanel);
 
             // button to save new node
             JPanel saveNodePanel = new JPanel();
