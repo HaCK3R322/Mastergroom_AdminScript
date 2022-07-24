@@ -110,6 +110,9 @@ public class ScriptFrame {
                 } if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     goCloserToLastClickedNode();
                     drawCurrentNode();
+                } if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    goToStartNode();
+                    drawCurrentNode();
                 }
             }
         });
@@ -127,6 +130,22 @@ public class ScriptFrame {
             lastNodesList.add(rollbackLastNodesList.get(rollbackLastNodesList.size() - 1));
             rollbackLastNodesList.remove(rollbackLastNodesList.size() - 1);
             currentNode = lastNodesList.get(lastNodesList.size() - 1);
+        }
+    }
+
+    // go to start node
+    private void goToStartNode() {
+        // show dialog yes/no
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                "Вы уверенны что хотите вернуться в начало?",
+                "В начало",
+                JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            currentNode = nodeManager.getFirstNode();
+            lastNodesList.clear();
+            rollbackLastNodesList.clear();
+            lastNodesList.add(currentNode);
         }
     }
 
