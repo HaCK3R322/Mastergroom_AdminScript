@@ -1,18 +1,13 @@
-package com.androsov.gui;
-
-import com.androsov.node.Node;
-import com.androsov.node.NodeManager;
+package com.androsov.gui.frames;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
-public class Gui {
+public class StartFrame {
     JFrame frame;
     JPanel panel;
 
-    public Gui() {
+    public StartFrame() {
 
         // Create and set up the window.
         frame = new JFrame();
