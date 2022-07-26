@@ -71,6 +71,8 @@ public class ScriptFrame extends DefaultFrame {
                 } if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     goToStartNode();
                     drawCurrentNode();
+                } if (e.getKeyCode() == KeyEvent.VK_F && e.isControlDown()) {
+                    new SearchFrame(ScriptFrame.this);
                 }
             }
         });

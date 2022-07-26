@@ -53,9 +53,9 @@ class AddExistingNodeFrame extends DefaultFrame {
         for (Node node : nodeManager.getNodes()) {
             nodesListComboBox.addItem(node.toString());
             nodesMap.put(node.toString(), node);
-            nodesListPanel.add(nodesListComboBox);
-            newNodePanel.add(nodesListPanel);
         }
+        nodesListPanel.add(nodesListComboBox);
+        newNodePanel.add(nodesListPanel);
 
         // button to save new node
         JPanel saveNodePanel = new JPanel();

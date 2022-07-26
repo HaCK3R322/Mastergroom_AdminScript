@@ -11,9 +11,12 @@ import java.awt.*;
 public class RedactorFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
     private final NodeManager nodeManager;
+    private final DefaultFrame parentFrame;
     
     public RedactorFrame(DefaultFrame parentFrame) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY(), false);
+
+        this.parentFrame = parentFrame;
 
         nodeManager = NodeManager.getInstance();
         Node nodeToRedact = nodeManager.getCurrentNode();
@@ -86,5 +89,10 @@ public class RedactorFrame extends DefaultFrame {
         redactorPanel.add(deleteNodePanel);
 
         this.setVisible(true);
+    }
+
+    @Override
+    public void refresh() {
+        parentFrame.refresh();
     }
 }
