@@ -30,9 +30,10 @@ public class ViewConfig {
     @Getter @Setter private Integer settingsFrameSizeX = 500;
     @Getter @Setter private Integer settingsFrameSizeY = 500;
 
+    private static String path = "resources/view.config";
     public void readConfig() {
         try {
-            Map<String, String> propertiesMap = ConfigSerializer.readConfig("resources/view.config");
+            Map<String, String> propertiesMap = ConfigSerializer.readConfig(path);
             ViewConfig.getInstance().setTextFontSize(Integer.parseInt(propertiesMap.get("textFontSize")));
             ViewConfig.getInstance().setButtonsFontSize(Integer.parseInt(propertiesMap.get("buttonsFontSize")));
             ViewConfig.getInstance().setBackgroundColor(Color.decode(propertiesMap.get("backgroundColor")));
@@ -41,7 +42,7 @@ public class ViewConfig {
             ViewConfig.getInstance().setSettingsFrameSizeX(Integer.parseInt(propertiesMap.get("settingsFrameSizeX")));
             ViewConfig.getInstance().setSettingsFrameSizeY(Integer.parseInt(propertiesMap.get("settingsFrameSizeY")));
         } catch (Exception e) {
-            new ErrorMessageFrame("Error reading config file: " + e.getMessage() + "\nDefault file will be used");
+            new ErrorMessageFrame("Error reading view config file " + path + ": " + e.getMessage() + ". Default config will be used.");
         }
     }
 

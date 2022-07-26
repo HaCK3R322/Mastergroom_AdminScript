@@ -20,19 +20,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class NodeManagerConfig {
-    public static Integer firstNodeId = 0;
+    public static Integer firstNodeId = 1;
     public static String connectionsPath = "resources/connections.json";
     public static String nodesPath = "resources/nodes.json";
 
-    public static void readConfig(String configPath) {
-        try {
-            Map<String, String> propertiesMap = ConfigSerializer.readConfig(configPath);
-            firstNodeId = Integer.parseInt(propertiesMap.get("firstNodeId"));
-            connectionsPath = propertiesMap.get("connectionsPath");
-            nodesPath = propertiesMap.get("nodesPath");
-        } catch (Exception e) {
-            new ErrorMessageFrame("Error reading config file: " + e.getMessage() + "\nDefault file will be used");
+    public static void readConfig(String configPath) throws NodeManagerPropertiesException, IOException {
+        Map<String, String> propertiesMap = ConfigSerializer.readConfig(configPath);
+
+        if(!propertiesMap.containsKey("firstNodeId") ||
+                !propertiesMap.containsKey("connectionsPath") ||
+                !propertiesMap.containsKey("nodesPath")) {
+            throw new NodeManagerPropertiesException("Config file is missing properties.");
         }
+
+        firstNodeId = Integer.parseInt(propertiesMap.get("firstNodeId"));
+        connectionsPath = propertiesMap.get("connectionsPath");
+        nodesPath = propertiesMap.get("nodesPath");
     }
 
     public static void saveConfig(String configPath) {
@@ -57,7 +60,6 @@ public class NodeManager {
     private String configPath = "resources/adminscript.config";
     private static Logger logger = Logger.getLogger("AdminScriptLogger");
 
-
     private static NodeManager instance;
     public static NodeManager getInstance() {
         if (instance == null) {
@@ -71,13 +73,18 @@ public class NodeManager {
             readProperties(configPath);
             logger.log(Level.INFO, "Starting node deserialization");
             readNodes(NodeManagerConfig.nodesPath, NodeManagerConfig.connectionsPath);
-        } catch (NodeManagerPropertiesException | NodeDeserializingException | IOException | NullPointerException e) {
-            logger.log(Level.SEVERE, "Could not create NodeManager instance: " + e.getMessage());
-            new ErrorMessageFrame("Could not create NodeManager instance: " + e.getMessage(), true);
+        } catch (NodeManagerPropertiesException e) {
+            String errorMessage = "Error: " + e.getMessage();
+            logger.log(Level.WARNING, Arrays.toString(e.getStackTrace()));
+            new ErrorMessageFrame(errorMessage);
         } catch (NoNodesFoundException e) {
             logger.log(Level.WARNING, "No nodes found in file " + NodeManagerConfig.nodesPath + "; Is it first run?");
             nodes = new ArrayList<>();
             addNode(new Node( "This node generated automatically. You can add your own nodes here."));
+        } catch (NodeDeserializingException | IOException | NullPointerException e) {
+            String errorMessage = "Could not create NodeManager instance: " + e;
+            logger.log(Level.SEVERE, Arrays.toString(e.getStackTrace()));
+            new ErrorMessageFrame(errorMessage, true);
         }
     }
 
@@ -120,7 +127,7 @@ public class NodeManager {
     public Node getFirstNode() {
         try {
             return getNodeById(NodeManagerConfig.firstNodeId);
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | NullPointerException e) {
             logger.log(Level.SEVERE, "Incorrect firstNodeId in config file. Please, check it.");
             new ErrorMessageFrame("Incorrect first node id in config file [" + configPath + "]. Please, check it.");
             throw new RuntimeException(e);
