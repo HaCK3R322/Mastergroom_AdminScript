@@ -1,6 +1,9 @@
 package com.androsov.gui.frames;
 
 import com.androsov.gui.ViewConfig;
+import com.androsov.gui.frames.help.HelpFrame;
+import com.androsov.gui.frames.help.HelpManager;
+import com.androsov.gui.frames.help.HelpMenu;
 import com.androsov.gui.frames.settings.RedactorFrame;
 import com.androsov.gui.frames.settings.ViewSettingsFrame;
 import com.androsov.node.Node;
@@ -73,9 +76,37 @@ public class ScriptFrame extends DefaultFrame {
                     drawCurrentNode();
                 } if (e.getKeyCode() == KeyEvent.VK_F && e.isControlDown()) {
                     new SearchFrame(ScriptFrame.this);
+                } if (e.getKeyCode() == KeyEvent.VK_H) {
+                    if (HelpManager.getHelpMap().containsKey(nodeManager.getCurrentNode().getId())) {
+                        HelpManager.HelpNode helpNode = HelpManager.getHelpMap().get(nodeManager.getCurrentNode().getId());
+                        new HelpFrame(helpNode.getHelpTopic(), helpNode.getHelpText());
+                    }
                 }
             }
         });
+    }
+
+    private void configureMenuBarContent() {
+        // add menu "Settings"
+        JMenu settingsMenu = new JMenu("Настройки");
+        settingsMenu.setBackground(Color.WHITE);
+        menuBar.add(settingsMenu);
+
+        menuBar.add(new HelpMenu("Помощь"));
+
+        // View
+        JMenuItem settingsMenuItem = new JMenuItem("Вид");
+        settingsMenuItem.addActionListener(e -> {
+            new ViewSettingsFrame(this);
+        });
+        settingsMenu.add(settingsMenuItem);
+
+        // Redactor
+        JMenuItem redactorMenuItem = new JMenuItem("Редакитровать эту страницу");
+        redactorMenuItem.addActionListener(e -> {
+            new RedactorFrame(this);
+        });
+        settingsMenu.add(redactorMenuItem);
     }
 
     private void goToPreviousClickedNode() {
@@ -85,6 +116,7 @@ public class ScriptFrame extends DefaultFrame {
             lastNodesList.remove(lastNodesList.size() - 1);
         }
     }
+
     private void goCloserToLastClickedNode() {
         if (rollbackLastNodesList.size() > 0) {
             lastNodesList.add(rollbackLastNodesList.get(rollbackLastNodesList.size() - 1));
@@ -92,8 +124,8 @@ public class ScriptFrame extends DefaultFrame {
             nodeManager.setCurrentNode(lastNodesList.get(lastNodesList.size() - 1));
         }
     }
-
     // go to start node
+
     private void goToStartNode() {
         // show dialog yes/no
         int result = JOptionPane.showConfirmDialog(
@@ -108,11 +140,11 @@ public class ScriptFrame extends DefaultFrame {
             lastNodesList.add(nodeManager.getCurrentNode());
         }
     }
-
     @Override
     public void refresh() {
         drawCurrentNode();
     }
+
     private void drawCurrentNode() {
         panel.removeAll();
 
@@ -154,27 +186,6 @@ public class ScriptFrame extends DefaultFrame {
 
     private String getHtmlText(String text, Integer fontSize) {
         return "<html><p style='font-size:" + fontSize + "'>" + text + "</p></html>";
-    }
-
-    private void configureMenuBarContent() {
-        // add menu "Settings"
-        JMenu settingsMenu = new JMenu("Настройки");
-        settingsMenu.setBackground(Color.WHITE);
-        menuBar.add(settingsMenu);
-
-        // View
-        JMenuItem settingsMenuItem = new JMenuItem("Вид");
-        settingsMenuItem.addActionListener(e -> {
-            new ViewSettingsFrame(this);
-        });
-        settingsMenu.add(settingsMenuItem);
-
-        // Redactor
-        JMenuItem redactorMenuItem = new JMenuItem("Редакитровать эту страницу");
-        redactorMenuItem.addActionListener(e -> {
-            new RedactorFrame(this);
-        });
-        settingsMenu.add(redactorMenuItem);
     }
 
 }
