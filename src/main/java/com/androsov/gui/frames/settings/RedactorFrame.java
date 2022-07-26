@@ -1,18 +1,18 @@
-package com.androsov.gui.frames;
+package com.androsov.gui.frames.settings;
 
 import com.androsov.gui.ViewConfig;
+import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 
 import javax.swing.*;
-import javax.swing.text.View;
 import java.awt.*;
 
-class RedactorFrame extends MyFrame {
+public class RedactorFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
     private final NodeManager nodeManager;
     
-    public RedactorFrame(MyFrame parentFrame) {
+    public RedactorFrame(DefaultFrame parentFrame) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY(), false);
 
         nodeManager = NodeManager.getInstance();
@@ -38,7 +38,7 @@ class RedactorFrame extends MyFrame {
         JPanel newNodePanel = new JPanel();
         newNodePanel.setLayout(new GridLayout(1, 2));
         newNodePanel.setOpaque(false);
-        JButton newNodeButton = new JButton("Добавить новый узел");
+        JButton newNodeButton = new JButton("Создать новую страницу");
         newNodeButton.addActionListener(e -> {
             new AddNewNodeFrame(parentFrame, nodeToRedact);
         });
@@ -49,7 +49,7 @@ class RedactorFrame extends MyFrame {
         JPanel addNodePanel = new JPanel();
         addNodePanel.setLayout(new GridLayout(1, 2));
         addNodePanel.setOpaque(false);
-        JButton addNodeButton = new JButton("Добавить существующий узел");
+        JButton addNodeButton = new JButton("Добавить ссылку на существующую страницу");
         addNodeButton.addActionListener(e -> {
             new AddExistingNodeFrame(this, nodeToRedact);
         });
@@ -60,7 +60,7 @@ class RedactorFrame extends MyFrame {
         JPanel deleteChildNodePanel = new JPanel();
         deleteChildNodePanel.setLayout(new GridLayout(1, 2));
         deleteChildNodePanel.setOpaque(false);
-        JButton deleteChildNodeButton = new JButton("Удалить дочерний узел");
+        JButton deleteChildNodeButton = new JButton("Удалить ссылку на страницу");
         deleteChildNodeButton.addActionListener(e -> {
             new DeleteChildNodeFrame(this, nodeToRedact);
         });
@@ -72,10 +72,10 @@ class RedactorFrame extends MyFrame {
         JPanel deleteNodePanel = new JPanel();
         deleteNodePanel.setLayout(new GridLayout(1, 2));
         deleteNodePanel.setOpaque(false);
-        JButton deleteNodeButton = new JButton("Удалить этот узел");
+        JButton deleteNodeButton = new JButton("Удалить эту страницу");
         // show dialog to confirm deletion of node
         deleteNodeButton.addActionListener(e -> {
-            int dialogResult = JOptionPane.showConfirmDialog(this, "Вы действительно хотите удалить этот узел?", "Удаление узла", JOptionPane.YES_NO_OPTION);
+            int dialogResult = JOptionPane.showConfirmDialog(this, "Вы действительно хотите удалить эту страницу?", "Удаление страницы", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 nodeManager.removeNode(nodeManager.getCurrentNode());
                 nodeManager.setCurrentNode(nodeManager.getFirstNode());

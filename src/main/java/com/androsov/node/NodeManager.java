@@ -69,6 +69,7 @@ public class NodeManager {
     private NodeManager() {
         try {
             readProperties(configPath);
+            logger.log(Level.INFO, "Starting node deserialization");
             readNodes(NodeManagerConfig.nodesPath, NodeManagerConfig.connectionsPath);
         } catch (NodeManagerPropertiesException | NodeDeserializingException | IOException | NullPointerException e) {
             logger.log(Level.SEVERE, "Could not create NodeManager instance: " + e.getMessage());

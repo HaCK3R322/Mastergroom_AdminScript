@@ -1,6 +1,7 @@
-package com.androsov.gui.frames;
+package com.androsov.gui.frames.settings;
 
 import com.androsov.gui.ViewConfig;
+import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 
@@ -8,11 +9,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
-class AddExistingNodeFrame extends MyFrame {
+class AddExistingNodeFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
     private final NodeManager nodeManager;
 
-    public AddExistingNodeFrame(MyFrame parentFrame, Node nodeToRedact) {
+    public AddExistingNodeFrame(DefaultFrame parentFrame, Node nodeToRedact) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY() / 2, false);
 
         nodeManager = NodeManager.getInstance();
@@ -33,7 +34,7 @@ class AddExistingNodeFrame extends MyFrame {
         pseudonymPanel.setLayout(new GridLayout(1, 2));
         pseudonymPanel.setOpaque(false);
         JLabel pseudonymLabel = new JLabel();
-        pseudonymLabel.setText("Псевдоним");
+        pseudonymLabel.setText("Название ссылки");
         pseudonymPanel.add(pseudonymLabel);
         JTextField pseudonymTextField = new JTextField();
         pseudonymTextField.setText("");
@@ -45,7 +46,7 @@ class AddExistingNodeFrame extends MyFrame {
         nodesListPanel.setLayout(new GridLayout(1, 2));
         nodesListPanel.setOpaque(false);
         JLabel nodesListLabel = new JLabel();
-        nodesListLabel.setText("Выберите узел");
+        nodesListLabel.setText("Выберите страницу");
         nodesListPanel.add(nodesListLabel);
         JComboBox<String> nodesListComboBox = new JComboBox<>();
         HashMap<String, Node> nodesMap = new HashMap<>();

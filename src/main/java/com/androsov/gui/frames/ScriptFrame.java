@@ -1,6 +1,8 @@
 package com.androsov.gui.frames;
 
 import com.androsov.gui.ViewConfig;
+import com.androsov.gui.frames.settings.RedactorFrame;
+import com.androsov.gui.frames.settings.ViewSettingsFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
@@ -9,18 +11,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ScriptFrame extends MyFrame {
+public class ScriptFrame extends DefaultFrame {
     public final JPanel panel;
     private final JMenuBar menuBar;
     private final Logger logger;
     private final NodeManager nodeManager;
-    private Node currentNode;
     // history of direct node moving (to go back)
     private final ArrayList<Node> lastNodesList = new ArrayList<>();
     // history of indirect node moving (to go back)
@@ -29,7 +27,7 @@ public class ScriptFrame extends MyFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
 
     public ScriptFrame() {
-        super(viewConfig.getFrameSizeX(), viewConfig.getFrameSizeY(), false);
+        super(viewConfig.getFrameSizeX(), viewConfig.getFrameSizeY(), true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         logger = Logger.getLogger("AdminScriptLogger");
@@ -44,8 +42,8 @@ public class ScriptFrame extends MyFrame {
         this.setJMenuBar(menuBar);
         configureMenuBarContent();
 
-        currentNode = nodeManager.getFirstNode();
-        lastNodesList.add(currentNode);
+        nodeManager.setCurrentNode(nodeManager.getFirstNode());
+        lastNodesList.add(nodeManager.getCurrentNode());
         drawCurrentNode();
 
         addNodeKeyMovementsToFrame();
@@ -80,7 +78,7 @@ public class ScriptFrame extends MyFrame {
 
     private void goToPreviousClickedNode() {
         if (lastNodesList.size() > 1) {
-            currentNode = lastNodesList.get(lastNodesList.size() - 2);
+            nodeManager.setCurrentNode(lastNodesList.get(lastNodesList.size() - 2));
             rollbackLastNodesList.add(lastNodesList.get(lastNodesList.size() - 1));
             lastNodesList.remove(lastNodesList.size() - 1);
         }
@@ -89,7 +87,7 @@ public class ScriptFrame extends MyFrame {
         if (rollbackLastNodesList.size() > 0) {
             lastNodesList.add(rollbackLastNodesList.get(rollbackLastNodesList.size() - 1));
             rollbackLastNodesList.remove(rollbackLastNodesList.size() - 1);
-            currentNode = lastNodesList.get(lastNodesList.size() - 1);
+            nodeManager.setCurrentNode(lastNodesList.get(lastNodesList.size() - 1));
         }
     }
 
@@ -102,10 +100,10 @@ public class ScriptFrame extends MyFrame {
                 "В начало",
                 JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            currentNode = nodeManager.getFirstNode();
+            nodeManager.setCurrentNode(nodeManager.getFirstNode());
             lastNodesList.clear();
             rollbackLastNodesList.clear();
-            lastNodesList.add(currentNode);
+            lastNodesList.add(nodeManager.getCurrentNode());
         }
     }
 
@@ -122,7 +120,7 @@ public class ScriptFrame extends MyFrame {
         phrasePanel.setLayout(new GridLayout(1, 1));
         JLabel phraseLabel = new JLabel();
         phrasePanel.add(phraseLabel);
-        phraseLabel.setText(getHtmlText(currentNode.getPhrase(), viewConfig.getTextFontSize()));
+        phraseLabel.setText(getHtmlText(nodeManager.getCurrentNode().getPhrase(), viewConfig.getTextFontSize()));
         phraseLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panel.add(phrasePanel);
         phraseLabel.setOpaque(true);
@@ -136,12 +134,12 @@ public class ScriptFrame extends MyFrame {
 
         // buttons to connect to other nodes
         // every click saves to lastNodes list
-        for (NodePseudonym pseudonym : currentNode.getChildren()) {
+        for (NodePseudonym pseudonym : nodeManager.getCurrentNode().getChildren()) {
             JButton button = new JButton();
             button.setText(getHtmlText(pseudonym.getPhrase(), viewConfig.getButtonsFontSize()));
             button.addActionListener(e -> {
-                currentNode = pseudonym.getNode();
-                lastNodesList.add(currentNode);
+                nodeManager.setCurrentNode(pseudonym.getNode());
+                lastNodesList.add(nodeManager.getCurrentNode());
                 rollbackLastNodesList.clear();
                 drawCurrentNode();
             });
@@ -170,7 +168,7 @@ public class ScriptFrame extends MyFrame {
         settingsMenu.add(settingsMenuItem);
 
         // Redactor
-        JMenuItem redactorMenuItem = new JMenuItem("Редакитровать этот узел");
+        JMenuItem redactorMenuItem = new JMenuItem("Редакитровать эту страницу");
         redactorMenuItem.addActionListener(e -> {
             new RedactorFrame(this);
         });

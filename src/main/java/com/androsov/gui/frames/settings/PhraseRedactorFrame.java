@@ -1,6 +1,7 @@
-package com.androsov.gui.frames;
+package com.androsov.gui.frames.settings;
 
 import com.androsov.gui.ViewConfig;
+import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 
@@ -10,11 +11,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class PhraseRedactorFrame extends MyFrame {
+class PhraseRedactorFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
     private final NodeManager nodeManager;
     
-    public PhraseRedactorFrame(MyFrame parentFrame, Node nodeToRedact) {
+    public PhraseRedactorFrame(DefaultFrame parentFrame, Node nodeToRedact) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY(), false);
         
         nodeManager = NodeManager.getInstance();

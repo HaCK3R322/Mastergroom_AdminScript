@@ -1,6 +1,8 @@
-package com.androsov.gui.frames;
+package com.androsov.gui.frames.settings;
 
 import com.androsov.gui.ViewConfig;
+import com.androsov.gui.frames.ErrorMessageFrame;
+import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
@@ -11,11 +13,11 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class DeleteChildNodeFrame extends MyFrame {
+class DeleteChildNodeFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
     private final NodeManager nodeManager;
 
-    public DeleteChildNodeFrame(MyFrame parentFrame, Node nodeToRedact) {
+    public DeleteChildNodeFrame(DefaultFrame parentFrame, Node nodeToRedact) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY() / 4, false);
 
         nodeManager = NodeManager.getInstance();
@@ -36,7 +38,7 @@ class DeleteChildNodeFrame extends MyFrame {
         nodesListPanel.setLayout(new GridLayout(1, 2));
         nodesListPanel.setOpaque(false);
         JLabel nodesListLabel = new JLabel();
-        nodesListLabel.setText("Выберите узел");
+        nodesListLabel.setText("Выберите страницу");
         nodesListPanel.add(nodesListLabel);
         JComboBox<String> nodesListComboBox = new JComboBox<>();
         HashMap<String, NodePseudonym> nodesPseudonymsMap = new HashMap<>();

@@ -1,6 +1,8 @@
-package com.androsov.gui.frames;
+package com.androsov.gui.frames.settings;
 
 import com.androsov.gui.ViewConfig;
+import com.androsov.gui.frames.ErrorMessageFrame;
+import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 
@@ -10,11 +12,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class AddNewNodeFrame extends MyFrame {
+class AddNewNodeFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
     private final NodeManager nodeManager;
 
-    public AddNewNodeFrame(MyFrame parentFrame, Node nodeToRedact) {
+    public AddNewNodeFrame(DefaultFrame parentFrame, Node nodeToRedact) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY() / 2, false);
 
         nodeManager = NodeManager.getInstance();
@@ -28,7 +30,7 @@ class AddNewNodeFrame extends MyFrame {
         pseudonymPanel.setLayout(new GridLayout(1, 2));
         pseudonymPanel.setOpaque(false);
         JLabel pseudonymLabel = new JLabel();
-        pseudonymLabel.setText("Псевдоним");
+        pseudonymLabel.setText("Название ссылки");
         pseudonymPanel.add(pseudonymLabel);
         JTextField pseudonymTextField = new JTextField();
         pseudonymTextField.setText("");

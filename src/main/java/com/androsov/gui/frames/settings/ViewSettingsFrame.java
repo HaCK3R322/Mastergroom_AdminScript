@@ -1,17 +1,16 @@
-package com.androsov.gui.frames;
+package com.androsov.gui.frames.settings;
 
-import com.androsov.ConfigSerializer;
 import com.androsov.gui.ViewConfig;
+import com.androsov.gui.frames.DefaultFrame;
 
 import javax.swing.*;
-import javax.swing.text.View;
 import java.awt.*;
 
-class ViewSettingsFrame extends MyFrame {
+public class ViewSettingsFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
 
     // create new frame, that will contain settings and labels. Then, add labels and settings to it.
-    public ViewSettingsFrame(MyFrame parent) {
+    public ViewSettingsFrame(DefaultFrame parent) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY(), false);
 
         JPanel settingsPanel = new JPanel();
