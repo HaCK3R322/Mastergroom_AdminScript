@@ -38,7 +38,6 @@ public class HelpManager {
 
     private static final String helpPath = "resources/help.json";
     private static Map<Integer, HelpNode> helpMap = null;
-    private static Integer sequence = 0;
 
     public static void read() throws IOException {
         helpMap = new HashMap<>();
@@ -51,9 +50,6 @@ public class HelpManager {
 
         for (HelpNode helpNode : helpNodes) {
             Logger.getLogger("AdminScriptLogger").log(Level.INFO, "Help node: " + helpNode.toString());
-            if (helpNode.getNodeId() == null) {
-                helpNode.setNodeId(getSequence());
-            }
             helpMap.put(helpNode.getNodeId(), helpNode);
         }
     }
@@ -71,9 +67,5 @@ public class HelpManager {
             }
         }
         return helpMap;
-    }
-
-    private static Integer getSequence() {
-        return --sequence;
     }
 }
