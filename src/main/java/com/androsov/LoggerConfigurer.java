@@ -25,15 +25,18 @@ public class LoggerConfigurer {
             logger.setUseParentHandlers(false);
 
             FileHandler fileHandler = new FileHandler("logs/AdminScript " + getCurrentDate() + ".log", false);
+            fileHandler.setEncoding("UTF-8");
             fileHandler.setFormatter(formatter);
             logger.addHandler(fileHandler);
 
             FileHandler latestFileHandler = new FileHandler("logs/latest.log", false);
+            latestFileHandler.setEncoding("UTF-8");
             latestFileHandler.setFormatter(formatter);
             logger.addHandler(latestFileHandler);
 
             ConsoleHandler consoleHandler = new ConsoleHandler();
             consoleHandler.setFormatter(formatter);
+            consoleHandler.setEncoding("UTF-8");
             logger.addHandler(consoleHandler);
         } catch (IOException e) {
             logger.log(Level.WARNING, "Failed to configure logger");
