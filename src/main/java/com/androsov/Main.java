@@ -2,19 +2,25 @@ package com.androsov;
 
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.ScriptFrame;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 
 import javax.swing.*;
 import java.util.logging.Logger;
 
 public class Main {
     public static void main(String[] args) {
+        ViewConfig viewConfig = ViewConfig.getInstance();
+        viewConfig.readConfig();
+
+        try {
+            UIManager.setLookAndFeel(new FlatIntelliJLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            throw new RuntimeException(e);
+        }
 
         Logger logger = Logger.getLogger("AdminScriptLogger");
         LoggerConfigurer.configureLogger(logger);
         logger.info("Logger configured. Logger name: " + logger.getName());
-
-        ViewConfig viewConfig = ViewConfig.getInstance();
-        viewConfig.readConfig();
 
         // start script frame
         logger.info("Opening script frame");

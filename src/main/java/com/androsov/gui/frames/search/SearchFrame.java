@@ -1,10 +1,11 @@
-package com.androsov.gui.frames;
+package com.androsov.gui.frames.search;
 
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
+import org.jdesktop.swingx.JXFindBar;
 import org.jdesktop.swingx.autocomplete.AutoCompleteComboBoxEditor;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.autocomplete.ObjectToStringConverter;

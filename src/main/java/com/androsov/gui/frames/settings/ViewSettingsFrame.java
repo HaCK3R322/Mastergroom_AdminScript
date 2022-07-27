@@ -20,8 +20,7 @@ public class ViewSettingsFrame extends DefaultFrame {
         // text font setting by slider from 10 to 50
         JPanel textFontSizePanel = new JPanel();
         textFontSizePanel.setLayout(new GridLayout(1, 2));
-        JLabel textFontSizeLabel = new JLabel();
-        textFontSizeLabel.setText("Размер текста");
+        JLabel textFontSizeLabel = new JLabel("Размер текста", SwingConstants.CENTER);
         textFontSizePanel.add(textFontSizeLabel);
         JSlider textFontSizeSlider = new JSlider(10, 50, viewConfig.getTextFontSize());
         textFontSizeSlider.setMajorTickSpacing(10);
@@ -39,8 +38,7 @@ public class ViewSettingsFrame extends DefaultFrame {
         // buttons font setting by slider from 10 to 50
         JPanel buttonsFontSizePanel = new JPanel();
         buttonsFontSizePanel.setLayout(new GridLayout(1, 2));
-        JLabel buttonsFontSizeLabel = new JLabel();
-        buttonsFontSizeLabel.setText("Размер кнопок");
+        JLabel buttonsFontSizeLabel = new JLabel("Размер кнопок", SwingConstants.CENTER);
         buttonsFontSizePanel.add(buttonsFontSizeLabel);
         JSlider buttonsFontSizeSlider = new JSlider(10, 50, viewConfig.getButtonsFontSize());
         buttonsFontSizeSlider.setMajorTickSpacing(10);
@@ -58,7 +56,7 @@ public class ViewSettingsFrame extends DefaultFrame {
         // background color setting by radio buttons in button group
         JPanel backgroundColorPanel = new JPanel(); // panel
         backgroundColorPanel.setLayout(new GridLayout(1, 2)); // layout
-        JLabel backgroundColorLabel = new JLabel("Цвет фона"); // label
+        JLabel backgroundColorLabel = new JLabel("Цвет фона", SwingConstants.CENTER); // label
         ButtonGroup backgroundColorGroup = new ButtonGroup(); // button group
         JRadioButton backgroundColorWhite = new JRadioButton("Белый"); // white button
         JRadioButton backgroundColorLightGray = new JRadioButton("Светло-серый"); // light gray button

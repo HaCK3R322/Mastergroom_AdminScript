@@ -4,6 +4,7 @@ import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.help.HelpFrame;
 import com.androsov.gui.frames.help.HelpManager;
 import com.androsov.gui.frames.help.HelpMenu;
+import com.androsov.gui.frames.search.SearchFrame;
 import com.androsov.gui.frames.settings.RedactorFrame;
 import com.androsov.gui.frames.settings.ViewSettingsFrame;
 import com.androsov.node.Node;
@@ -95,6 +96,12 @@ public class ScriptFrame extends DefaultFrame {
         menuBar.add(settingsMenu);
 
         menuBar.add(new HelpMenu("Помощь"));
+
+        JMenu searchMenu = new JMenu("Поиск");
+        JMenuItem searchItem = new JMenuItem("Поиск по страницам");
+        searchItem.addActionListener(e -> new SearchFrame(ScriptFrame.this));
+        searchMenu.add(searchItem);
+        menuBar.add(searchMenu);
 
         // View
         JMenuItem settingsMenuItem = new JMenuItem("Вид");
