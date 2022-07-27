@@ -17,13 +17,19 @@ public class HelpFrame extends DefaultFrame {
 
         this.setTitle(helpTopic);
 
-        JTextArea textArea = new JTextArea(helpText);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setEditable(false);
-        textArea.setBackground(viewConfig.getBackgroundColor());
-        this.add(textArea);
+        JTextPane textPanel = new JTextPane();
+        textPanel.setContentType("text/html");
+        textPanel.setText(helpText);
+        textPanel.setEditable(false);
+        textPanel.setOpaque(true);
+        textPanel.setBackground(viewConfig.getBackgroundColor());
+
+        this.add(textPanel);
 
         this.setVisible(true);
+    }
+
+    private static String stringToHtmlText(String text) {
+        return "<html><p>" + text + "</p></html>";
     }
 }

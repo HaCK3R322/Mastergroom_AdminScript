@@ -48,8 +48,17 @@ public class HelpManager {
 
         List<HelpNode> helpNodes = gsonBuilder.fromJson(new FileReader(helpPath), listType);
 
+        Integer sequence = 0; // only for collecting all help nodes instead of single node, maybe ill change it later but probably not
         for (HelpNode helpNode : helpNodes) {
+            if(helpNode == null) continue;
             Logger.getLogger("AdminScriptLogger").log(Level.INFO, "Help node: " + helpNode.toString());
+
+            if(helpNode.nodeId == null) {
+                sequence--;
+                helpMap.put(sequence, helpNode);
+                continue;
+            }
+
             helpMap.put(helpNode.getNodeId(), helpNode);
         }
     }

@@ -61,7 +61,11 @@ public class ScriptFrame extends DefaultFrame {
             @Override
             public void keyTyped(KeyEvent e) {}
             @Override
-            public void keyPressed(KeyEvent e) {}
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_F && e.isControlDown()) {
+                    new SearchFrame(ScriptFrame.this);
+                }
+            }
 
             @Override
             public void keyReleased(KeyEvent e) {
@@ -74,8 +78,6 @@ public class ScriptFrame extends DefaultFrame {
                 } if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     goToStartNode();
                     drawCurrentNode();
-                } if (e.getKeyCode() == KeyEvent.VK_F && e.isControlDown()) {
-                    new SearchFrame(ScriptFrame.this);
                 } if (e.getKeyCode() == KeyEvent.VK_H) {
                     if (HelpManager.getHelpMap().containsKey(nodeManager.getCurrentNode().getId())) {
                         HelpManager.HelpNode helpNode = HelpManager.getHelpMap().get(nodeManager.getCurrentNode().getId());

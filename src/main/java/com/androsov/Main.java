@@ -3,10 +3,12 @@ package com.androsov;
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.ScriptFrame;
 
+import javax.swing.*;
 import java.util.logging.Logger;
 
 public class Main {
     public static void main(String[] args) {
+
         Logger logger = Logger.getLogger("AdminScriptLogger");
         LoggerConfigurer.configureLogger(logger);
         logger.info("Logger configured. Logger name: " + logger.getName());
