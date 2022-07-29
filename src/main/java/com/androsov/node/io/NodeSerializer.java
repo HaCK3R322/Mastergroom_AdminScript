@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NodeSerializer {
-    private static Logger logger = Logger.getLogger("AdminScriptLogger");
+    private static final Logger logger = Logger.getLogger("AdminScriptLogger");
 
 
     @AllArgsConstructor

@@ -5,11 +5,8 @@ import com.androsov.gui.frames.ErrorMessageFrame;
 import lombok.Getter;
 import lombok.Setter;
 import java.awt.*;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ViewConfig {
     //singleton
@@ -29,8 +26,11 @@ public class ViewConfig {
     @Getter @Setter private Integer frameSizeY = 800;
     @Getter @Setter private Integer settingsFrameSizeX = 500;
     @Getter @Setter private Integer settingsFrameSizeY = 500;
+    @Getter @Setter private Integer helpFrameSizeX = 500;
+    @Getter @Setter private Integer helpFrameSizeY = 500;
+    @Getter @Setter private Boolean showHelp = true;
 
-    private static String path = "resources/view.config";
+    private static final String path = "resources/view.config";
     public void readConfig() {
         try {
             Map<String, String> propertiesMap = ConfigSerializer.readConfig(path);
@@ -41,6 +41,9 @@ public class ViewConfig {
             ViewConfig.getInstance().setFrameSizeY(Integer.parseInt(propertiesMap.get("frameSizeY")));
             ViewConfig.getInstance().setSettingsFrameSizeX(Integer.parseInt(propertiesMap.get("settingsFrameSizeX")));
             ViewConfig.getInstance().setSettingsFrameSizeY(Integer.parseInt(propertiesMap.get("settingsFrameSizeY")));
+            ViewConfig.getInstance().setHelpFrameSizeX(Integer.parseInt(propertiesMap.get("helpFrameSizeX")));
+            ViewConfig.getInstance().setHelpFrameSizeY(Integer.parseInt(propertiesMap.get("helpFrameSizeY")));
+            ViewConfig.getInstance().setShowHelp(Boolean.parseBoolean(propertiesMap.get("showHelp")));
         } catch (Exception e) {
             new ErrorMessageFrame("Error reading view config file " + path + ": " + e.getMessage() + ". Default config will be used.");
         }
@@ -63,6 +66,9 @@ public class ViewConfig {
         propertiesMap.put("frameSizeY", String.valueOf(ViewConfig.getInstance().getFrameSizeY()));
         propertiesMap.put("settingsFrameSizeX", String.valueOf(ViewConfig.getInstance().getSettingsFrameSizeX()));
         propertiesMap.put("settingsFrameSizeY", String.valueOf(ViewConfig.getInstance().getSettingsFrameSizeY()));
+        propertiesMap.put("helpFrameSizeX", String.valueOf(ViewConfig.getInstance().getHelpFrameSizeX()));
+        propertiesMap.put("helpFrameSizeY", String.valueOf(ViewConfig.getInstance().getHelpFrameSizeY()));
+        propertiesMap.put("showHelp", String.valueOf(ViewConfig.getInstance().getShowHelp()));
         return propertiesMap;
     }
 }

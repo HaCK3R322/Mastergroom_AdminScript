@@ -1,21 +1,15 @@
 package com.androsov.node;
 
 import com.androsov.ConfigSerializer;
-import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.ErrorMessageFrame;
 import com.androsov.node.exceptions.NoNodesFoundException;
 import com.androsov.node.exceptions.NodeDeserializingException;
 import com.androsov.node.exceptions.NodeManagerPropertiesException;
 import com.androsov.node.io.NodeSerializer;
-import lombok.Getter;
-import lombok.Setter;
+import com.androsov.util.PathConverter;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,8 +28,8 @@ class NodeManagerConfig {
         }
 
         firstNodeId = Integer.parseInt(propertiesMap.get("firstNodeId"));
-        connectionsPath = propertiesMap.get("connectionsPath");
-        nodesPath = propertiesMap.get("nodesPath");
+        connectionsPath = PathConverter.convertToAbsoluteAppdataFilePath(propertiesMap.get("connectionsPath"));
+        nodesPath = PathConverter.convertToAbsoluteAppdataFilePath(propertiesMap.get("nodesPath"));
     }
 
     public static void saveConfig(String configPath) {
@@ -57,8 +51,8 @@ class NodeManagerConfig {
 
 public class NodeManager {
     private Integer sequence = 0;
-    private String configPath = "resources/adminscript.config";
-    private static Logger logger = Logger.getLogger("AdminScriptLogger");
+    private final String configPath = "resources/adminscript.config";
+    private static final Logger logger = Logger.getLogger("AdminScriptLogger");
 
     private static NodeManager instance;
     public static NodeManager getInstance() {

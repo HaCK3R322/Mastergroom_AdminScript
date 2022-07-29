@@ -21,7 +21,7 @@ public class RedactorFrame extends DefaultFrame {
         nodeManager = NodeManager.getInstance();
         Node nodeToRedact = nodeManager.getCurrentNode();
 
-        this.setTitle("Редактирование узла id: " + nodeToRedact.getId());
+        this.setTitle("Редактирование стриницы с id: " + nodeToRedact.getId());
 
         JPanel redactorPanel = new JPanel();
         redactorPanel.setOpaque(true);
@@ -31,9 +31,7 @@ public class RedactorFrame extends DefaultFrame {
 
         // button that opens phrase redactor frame
         JButton phraseRedactorButton = new JButton("Изменить фразу");
-        phraseRedactorButton.addActionListener(e -> {
-            new PhraseRedactorFrame(this, nodeToRedact);
-        });
+        phraseRedactorButton.addActionListener(e -> new PhraseRedactorFrame(this, nodeToRedact));
         redactorPanel.add(phraseRedactorButton);
 
 
@@ -42,9 +40,7 @@ public class RedactorFrame extends DefaultFrame {
         newNodePanel.setLayout(new GridLayout(1, 2));
         newNodePanel.setOpaque(false);
         JButton newNodeButton = new JButton("Создать новую страницу");
-        newNodeButton.addActionListener(e -> {
-            new AddNewNodeFrame(parentFrame, nodeToRedact);
-        });
+        newNodeButton.addActionListener(e -> new AddNewNodeFrame(parentFrame, nodeToRedact));
         newNodePanel.add(newNodeButton);
         redactorPanel.add(newNodePanel);
 
@@ -53,9 +49,7 @@ public class RedactorFrame extends DefaultFrame {
         addNodePanel.setLayout(new GridLayout(1, 2));
         addNodePanel.setOpaque(false);
         JButton addNodeButton = new JButton("Добавить ссылку на существующую страницу");
-        addNodeButton.addActionListener(e -> {
-            new AddExistingNodeFrame(this, nodeToRedact);
-        });
+        addNodeButton.addActionListener(e -> new AddExistingNodeFrame(this, nodeToRedact));
         addNodePanel.add(addNodeButton);
         redactorPanel.add(addNodePanel);
 
@@ -64,9 +58,7 @@ public class RedactorFrame extends DefaultFrame {
         deleteChildNodePanel.setLayout(new GridLayout(1, 2));
         deleteChildNodePanel.setOpaque(false);
         JButton deleteChildNodeButton = new JButton("Удалить ссылку на страницу");
-        deleteChildNodeButton.addActionListener(e -> {
-            new DeleteChildNodeFrame(this, nodeToRedact);
-        });
+        deleteChildNodeButton.addActionListener(e -> new DeleteChildNodeFrame(this, nodeToRedact));
         deleteChildNodePanel.add(deleteChildNodeButton);
         redactorPanel.add(deleteChildNodePanel);
 

@@ -5,17 +5,12 @@ import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
-import org.jdesktop.swingx.JXFindBar;
-import org.jdesktop.swingx.autocomplete.AutoCompleteComboBoxEditor;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.autocomplete.ObjectToStringConverter;
 
 import javax.swing.*;
 import java.awt.GridLayout;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SearchFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();

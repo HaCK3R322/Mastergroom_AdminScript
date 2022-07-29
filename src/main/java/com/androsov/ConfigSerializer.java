@@ -1,5 +1,7 @@
 package com.androsov;
 
+import com.androsov.util.PathConverter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -12,12 +14,14 @@ import java.util.logging.Logger;
 
 public class ConfigSerializer {
     public static Map<String, String> readConfig(String configFilePath) throws IOException {
+        String filePath = PathConverter.convertToAbsoluteAppdataFilePath(configFilePath);
+
         Logger logger = Logger.getLogger("AdminScriptLogger");
-        logger.log(Level.INFO, "Reading config file from " + configFilePath);
+        logger.log(Level.INFO, "Reading config file from " + filePath);
 
         Map<String, String> config = new HashMap<>();
         // create File from path, if it doesn't exist, throw exception
-        File file = new File(configFilePath);
+        File file = new File(filePath);
         if (!file.exists()) {
             throw new FileNotFoundException("Config file not found");
         }
@@ -42,11 +46,13 @@ public class ConfigSerializer {
     }
 
     public static void saveConfig(String configFilePath, Map<String, String> config) throws IOException {
+        String filePath = PathConverter.convertToAbsoluteAppdataFilePath(configFilePath);
+
         Logger logger = Logger.getLogger("AdminScriptLogger");
-        logger.log(Level.INFO, "Saving config file to " + configFilePath);
+        logger.log(Level.INFO, "Saving config file to " + filePath);
 
         // create File from path, if it doesn't exist, throw exception
-        File file = new File(configFilePath);
+        File file = new File(filePath);
         if (!file.exists()) {
             throw new FileNotFoundException("Config file not found");
         }

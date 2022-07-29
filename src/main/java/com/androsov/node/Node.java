@@ -40,13 +40,6 @@ public class Node {
         children.remove(nodePseudonym);
     }
 
-    public NodePseudonym getChildPseudonymByPhrase(String pseudonym) {
-        return children.stream()
-                .filter(nodePseudonym -> nodePseudonym.getPhrase().equals(pseudonym))
-                .findFirst()
-                .get();
-    }
-
     @Override
     public String toString() {
         return "{\"id\":" + id + ", \"phrase\":\"" + phrase + "\"}";

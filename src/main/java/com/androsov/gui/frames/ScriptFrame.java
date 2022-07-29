@@ -4,12 +4,14 @@ import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.help.HelpFrame;
 import com.androsov.gui.frames.help.HelpManager;
 import com.androsov.gui.frames.help.HelpMenu;
+import com.androsov.gui.frames.help.HelpRedactorFrame;
 import com.androsov.gui.frames.search.SearchFrame;
 import com.androsov.gui.frames.settings.RedactorFrame;
 import com.androsov.gui.frames.settings.ViewSettingsFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
+import info.clearthought.layout.TableLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,9 +21,10 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class ScriptFrame extends DefaultFrame {
-    public final JPanel panel;
+    final static double goldenRatio = 0.618033;
+
+    public final JPanel mainPanel;
     private final JMenuBar menuBar;
-    private final Logger logger;
     private final NodeManager nodeManager;
     // history of direct node moving (to go back)
     private final ArrayList<Node> lastNodesList = new ArrayList<>();
@@ -34,11 +37,10 @@ public class ScriptFrame extends DefaultFrame {
         super(viewConfig.getFrameSizeX(), viewConfig.getFrameSizeY(), true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        logger = Logger.getLogger("AdminScriptLogger");
         nodeManager = NodeManager.getInstance();
 
-        panel = new JPanel();
-        this.add(panel);
+        mainPanel = new JPanel();
+        this.add(mainPanel);
 
         // add menu bar to frame
         menuBar = new JMenuBar();
@@ -66,6 +68,14 @@ public class ScriptFrame extends DefaultFrame {
                 if (e.getKeyCode() == KeyEvent.VK_F && e.isControlDown()) {
                     new SearchFrame(ScriptFrame.this);
                 }
+                if (e.getKeyCode() == KeyEvent.VK_H && !e.isControlDown()) {
+                    if (HelpManager.getHelpMap().containsKey(nodeManager.getCurrentNode().getId())) {
+                        HelpManager.HelpNode helpNode = HelpManager.getHelpMap().get(nodeManager.getCurrentNode().getId());
+                        new HelpFrame(helpNode.getHelpTopic(), helpNode.getHelpText());
+                    }
+                } else if (e.getKeyCode() == KeyEvent.VK_H && e.isControlDown()) {
+                    new HelpRedactorFrame(ScriptFrame.this, nodeManager.getCurrentNode().getId());
+                }
             }
 
             @Override
@@ -73,17 +83,14 @@ public class ScriptFrame extends DefaultFrame {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                     goToPreviousClickedNode();
                     drawCurrentNode();
-                } if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     goCloserToLastClickedNode();
                     drawCurrentNode();
-                } if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     goToStartNode();
                     drawCurrentNode();
-                } if (e.getKeyCode() == KeyEvent.VK_H) {
-                    if (HelpManager.getHelpMap().containsKey(nodeManager.getCurrentNode().getId())) {
-                        HelpManager.HelpNode helpNode = HelpManager.getHelpMap().get(nodeManager.getCurrentNode().getId());
-                        new HelpFrame(helpNode.getHelpTopic(), helpNode.getHelpText());
-                    }
                 }
             }
         });
@@ -101,20 +108,22 @@ public class ScriptFrame extends DefaultFrame {
         JMenuItem searchItem = new JMenuItem("Поиск по страницам");
         searchItem.addActionListener(e -> new SearchFrame(ScriptFrame.this));
         searchMenu.add(searchItem);
+        JMenuItem goToStartItem = new JMenuItem("Перейти к началу");
+        goToStartItem.addActionListener(e -> {
+            goToStartNode();
+            drawCurrentNode();
+        });
+        searchMenu.add(goToStartItem);
         menuBar.add(searchMenu);
 
         // View
         JMenuItem settingsMenuItem = new JMenuItem("Вид");
-        settingsMenuItem.addActionListener(e -> {
-            new ViewSettingsFrame(this);
-        });
+        settingsMenuItem.addActionListener(e -> new ViewSettingsFrame(this));
         settingsMenu.add(settingsMenuItem);
 
         // Redactor
         JMenuItem redactorMenuItem = new JMenuItem("Редакитровать эту страницу");
-        redactorMenuItem.addActionListener(e -> {
-            new RedactorFrame(this);
-        });
+        redactorMenuItem.addActionListener(e -> new RedactorFrame(this));
         settingsMenu.add(redactorMenuItem);
     }
 
@@ -133,7 +142,6 @@ public class ScriptFrame extends DefaultFrame {
             nodeManager.setCurrentNode(lastNodesList.get(lastNodesList.size() - 1));
         }
     }
-    // go to start node
 
     private void goToStartNode() {
         // show dialog yes/no
@@ -155,23 +163,55 @@ public class ScriptFrame extends DefaultFrame {
     }
 
     private void drawCurrentNode() {
-        panel.removeAll();
+        mainPanel.removeAll();
 
-        panel.setLayout(new GridLayout(1, 2));
+        this.setBackground(viewConfig.getBackgroundColor());
 
-        JPanel phrasePanel = new JPanel();
-        phrasePanel.setLayout(new GridLayout(1, 1));
         JLabel phraseLabel = new JLabel();
-        phrasePanel.add(phraseLabel);
         phraseLabel.setText(getHtmlText(nodeManager.getCurrentNode().getPhrase(), viewConfig.getTextFontSize()));
         phraseLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        panel.add(phrasePanel);
-        phraseLabel.setOpaque(true);
-        phraseLabel.setBackground(viewConfig.getBackgroundColor());
+
+        JPanel phrasePanel = new JPanel();
+        phrasePanel.setBackground(viewConfig.getBackgroundColor());
+
+        if(HelpManager.isHelpExists(nodeManager.getCurrentNode().getId()) && viewConfig.getShowHelp()) {
+            double[][] phrasePanelTableSizes = {{goldenRatio, TableLayout.FILL}, {TableLayout.FILL}};
+            phrasePanel.setLayout(new TableLayout(phrasePanelTableSizes));
+
+            phrasePanel.add(phraseLabel,"0, 0");
+
+            HelpManager.HelpNode helpNode = HelpManager.getHelpMap().get(nodeManager.getCurrentNode().getId());
+            String text = helpNode.getHelpTopic() + ":\n" + helpNode.getHelpText();
+            JTextArea helpTextPane = new JTextArea();
+            helpTextPane.setWrapStyleWord(true);
+            helpTextPane.setLineWrap(true);
+            helpTextPane.setText(text);
+            helpTextPane.setFont(new Font("Default", Font.ITALIC, (int)(viewConfig.getTextFontSize() * goldenRatio)));
+            helpTextPane.setEditable(false);
+            helpTextPane.setBackground(viewConfig.getBackgroundColor());
+            helpTextPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+            JScrollPane helpTextScrollPane = new JScrollPane(helpTextPane);
+            helpTextScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            helpTextScrollPane.setBackground(viewConfig.getBackgroundColor());
+            helpTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+            helpTextScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+            phrasePanel.add(helpTextScrollPane, "1, 0");
+        } else {
+            phrasePanel.setLayout(new GridLayout(1, 1));
+            phrasePanel.add(phraseLabel);
+        }
+
+        double[][] mainPanelSize = {{TableLayout.FILL},{TableLayout.FILL, goldenRatio}};
+        mainPanel.setLayout(new TableLayout(mainPanelSize));
+
+        mainPanel.add(phrasePanel, "0,0");
 
         JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new GridLayout(10, 1));
-        panel.add(buttonsPanel);
+        buttonsPanel.setLayout(new GridLayout(5, 2));
+        mainPanel.add(buttonsPanel, "0,1");
+
         buttonsPanel.setOpaque(true);
         buttonsPanel.setBackground(viewConfig.getBackgroundColor());
 
@@ -189,12 +229,12 @@ public class ScriptFrame extends DefaultFrame {
             buttonsPanel.add(button);
         }
 
-        panel.revalidate();
+        mainPanel.revalidate();
         this.repaint();
     }
 
     private String getHtmlText(String text, Integer fontSize) {
-        return "<html><p style='font-size:" + fontSize + "'>" + text + "</p></html>";
+        return "<html><body><p style='font-size:" + fontSize + "'>" + text + "</p></body></html>";
     }
 
 }

@@ -13,9 +13,7 @@ public class HelpMenu extends JMenu {
             for (Map.Entry<Integer, HelpManager.HelpNode> entry : helpMap.entrySet()) {
                 if(entry.getValue().getNodeId() == null) {
                     JMenuItem helpMenuItem = new JMenuItem(entry.getValue().getHelpTopic());
-                    helpMenuItem.addActionListener(e -> {
-                        new HelpFrame(entry.getValue().getHelpTopic(), entry.getValue().getHelpText());
-                    });
+                    helpMenuItem.addActionListener(e -> new HelpFrame(entry.getValue().getHelpTopic(), entry.getValue().getHelpText()));
                     this.add(helpMenuItem);
                 }
             }

@@ -9,6 +9,10 @@ import java.util.logging.Logger;
 
 public class Main {
     public static void main(String[] args) {
+        Logger logger = Logger.getLogger("AdminScriptLogger");
+        LoggerConfigurer.configureLogger(logger);
+        logger.info("Logger configured. Logger name: " + logger.getName());
+
         ViewConfig viewConfig = ViewConfig.getInstance();
         viewConfig.readConfig();
 
@@ -17,10 +21,6 @@ public class Main {
         } catch (UnsupportedLookAndFeelException e) {
             throw new RuntimeException(e);
         }
-
-        Logger logger = Logger.getLogger("AdminScriptLogger");
-        LoggerConfigurer.configureLogger(logger);
-        logger.info("Logger configured. Logger name: " + logger.getName());
 
         // start script frame
         logger.info("Opening script frame");
