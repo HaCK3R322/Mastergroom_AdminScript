@@ -18,6 +18,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +37,7 @@ public class ScriptFrame extends DefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
 
     public ScriptFrame() {
-        super(viewConfig.getFrameSizeX(), viewConfig.getFrameSizeY(), true);
+        super(viewConfig.getFrameSizeX(), viewConfig.getFrameSizeY(), true, viewConfig.getFramePosX(), viewConfig.getFramePosY());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         nodeManager = NodeManager.getInstance();
@@ -57,6 +58,20 @@ public class ScriptFrame extends DefaultFrame {
         addNodeKeyMovementsToFrame();
 
         this.setVisible(true);
+
+        // on exit save settings
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                if (viewConfig.getSavePos()) {
+                    viewConfig.setFrameSizeX(getWidth());
+                    viewConfig.setFrameSizeY(getHeight());
+                    viewConfig.setFramePosX(getX());
+                    viewConfig.setFramePosY(getY());
+                    viewConfig.saveConfig();
+                }
+            }
+        });
     }
 
     private void addNodeKeyMovementsToFrame() {
@@ -127,14 +142,6 @@ public class ScriptFrame extends DefaultFrame {
         JMenuItem redactorMenuItem = new JMenuItem("Редакитровать эту страницу");
         redactorMenuItem.addActionListener(e -> new RedactorFrame(this));
         settingsMenu.add(redactorMenuItem);
-
-        // if resized, redraw current node
-        this.addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                drawCurrentNode();
-            }
-        });
     }
 
     private void goToPreviousClickedNode() {
@@ -256,7 +263,6 @@ public class ScriptFrame extends DefaultFrame {
                 rollbackLastNodesList.clear();
                 drawCurrentNode();
             });
-            buttonsPanel.setMinimumSize(new Dimension(0, 200));
             buttonsPanel.add(button);
         }
 

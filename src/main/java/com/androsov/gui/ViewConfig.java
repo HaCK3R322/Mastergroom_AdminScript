@@ -19,11 +19,14 @@ public class ViewConfig {
     }
     private ViewConfig() {}
 
-    @Getter @Setter private Integer textFontSize = 20;
-    @Getter @Setter private Integer buttonsFontSize = 20;
+    @Getter @Setter private Integer textFontSize = 25;
+    @Getter @Setter private Integer buttonsFontSize = 10;
     @Getter @Setter private Color backgroundColor = Color.WHITE;
     @Getter @Setter private Integer frameSizeX = 800;
     @Getter @Setter private Integer frameSizeY = 800;
+    @Getter @Setter private Integer framePosX = 800;
+    @Getter @Setter private Integer framePosY = 800;
+    @Getter @Setter private Boolean savePos = false;
     @Getter @Setter private Integer settingsFrameSizeX = 500;
     @Getter @Setter private Integer settingsFrameSizeY = 500;
     @Getter @Setter private Integer helpFrameSizeX = 500;
@@ -39,6 +42,9 @@ public class ViewConfig {
             ViewConfig.getInstance().setBackgroundColor(Color.decode(propertiesMap.get("backgroundColor")));
             ViewConfig.getInstance().setFrameSizeX(Integer.parseInt(propertiesMap.get("frameSizeX")));
             ViewConfig.getInstance().setFrameSizeY(Integer.parseInt(propertiesMap.get("frameSizeY")));
+            ViewConfig.getInstance().setFramePosX(Integer.parseInt(propertiesMap.get("framePosX")));
+            ViewConfig.getInstance().setFramePosY(Integer.parseInt(propertiesMap.get("framePosY")));
+            ViewConfig.getInstance().setSavePos(Boolean.parseBoolean(propertiesMap.get("savePos")));
             ViewConfig.getInstance().setSettingsFrameSizeX(Integer.parseInt(propertiesMap.get("settingsFrameSizeX")));
             ViewConfig.getInstance().setSettingsFrameSizeY(Integer.parseInt(propertiesMap.get("settingsFrameSizeY")));
             ViewConfig.getInstance().setHelpFrameSizeX(Integer.parseInt(propertiesMap.get("helpFrameSizeX")));
@@ -64,6 +70,9 @@ public class ViewConfig {
         propertiesMap.put("backgroundColor", String.valueOf(ViewConfig.getInstance().getBackgroundColor().getRGB()));
         propertiesMap.put("frameSizeX", String.valueOf(ViewConfig.getInstance().getFrameSizeX()));
         propertiesMap.put("frameSizeY", String.valueOf(ViewConfig.getInstance().getFrameSizeY()));
+        propertiesMap.put("framePosX", String.valueOf(ViewConfig.getInstance().getFramePosX()));
+        propertiesMap.put("framePosY", String.valueOf(ViewConfig.getInstance().getFramePosY()));
+        propertiesMap.put("savePos", String.valueOf(ViewConfig.getInstance().getSavePos()));
         propertiesMap.put("settingsFrameSizeX", String.valueOf(ViewConfig.getInstance().getSettingsFrameSizeX()));
         propertiesMap.put("settingsFrameSizeY", String.valueOf(ViewConfig.getInstance().getSettingsFrameSizeY()));
         propertiesMap.put("helpFrameSizeX", String.valueOf(ViewConfig.getInstance().getHelpFrameSizeX()));

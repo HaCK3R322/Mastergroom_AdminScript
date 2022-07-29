@@ -22,6 +22,12 @@ public class DefaultFrame extends JFrame {
         this.setLocation(dim.width / 2 - width / 2, dim.height / 2 - height / 2);
     }
 
+    public DefaultFrame(Integer width, Integer height, boolean resizable, Integer posX, Integer posY) {
+        this.setSize(width, height);
+        this.setResizable(resizable);
+        this.setLocation(posX, posY);
+    }
+
     public void refresh() {
         this.revalidate();
         this.repaint();

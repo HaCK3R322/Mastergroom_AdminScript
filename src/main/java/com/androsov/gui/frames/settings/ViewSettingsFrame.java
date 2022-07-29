@@ -15,7 +15,7 @@ public class ViewSettingsFrame extends DefaultFrame {
         this.setTitle("Настройки вида");
         this.setBackground(viewConfig.getBackgroundColor());
 
-        final int numberOfSettings = 4;
+        final int numberOfSettings = 5;
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
@@ -126,6 +126,22 @@ public class ViewSettingsFrame extends DefaultFrame {
         labelsPanel.add(showHelpLabel);
         showHelpCheckPanel.add(showHelpCheck);
         settingsPanel.add(showHelpCheckPanel);
+
+        // save pos check
+        JLabel savePosLabel = new JLabel("Позиция", SwingConstants.LEFT);
+        savePosLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 30, 0));
+        JCheckBox savePosCheckBox = new JCheckBox("Сохранять при закрыти программы");
+        savePosCheckBox.setSelected(viewConfig.getSavePos());
+        savePosCheckBox.addActionListener(e -> {
+            viewConfig.setSavePos(savePosCheckBox.isSelected());
+            parent.refresh();
+        });
+        JPanel savePosCheckPanel = new JPanel();
+        savePosCheckPanel.setLayout(new GridLayout(1, 1));
+        savePosCheckPanel.setBackground(Color.WHITE);
+        labelsPanel.add(savePosLabel);
+        savePosCheckPanel.add(savePosCheckBox);
+        settingsPanel.add(savePosCheckPanel);
 
         // button to save settings
         JButton saveSettingsButton = new JButton("Сохранить");
