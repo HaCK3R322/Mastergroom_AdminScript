@@ -1,5 +1,6 @@
 package com.androsov.gui.frames;
 
+import com.androsov.Main;
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.help.HelpFrame;
 import com.androsov.gui.frames.help.HelpManager;
@@ -18,6 +19,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ScriptFrame extends DefaultFrame {
@@ -125,6 +127,14 @@ public class ScriptFrame extends DefaultFrame {
         JMenuItem redactorMenuItem = new JMenuItem("Редакитровать эту страницу");
         redactorMenuItem.addActionListener(e -> new RedactorFrame(this));
         settingsMenu.add(redactorMenuItem);
+
+        // if resized, redraw current node
+        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                drawCurrentNode();
+            }
+        });
     }
 
     private void goToPreviousClickedNode() {
@@ -209,14 +219,34 @@ public class ScriptFrame extends DefaultFrame {
         mainPanel.add(phrasePanel, "0,0");
 
         JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new GridLayout(5, 2));
-        mainPanel.add(buttonsPanel, "0,1");
-
         buttonsPanel.setOpaque(true);
         buttonsPanel.setBackground(viewConfig.getBackgroundColor());
 
-        // buttons to connect to other nodes
-        // every click saves to lastNodes list
+        if(nodeManager.getCurrentNode().getChildren().size() > 10) {
+            int numberOfChildren = nodeManager.getCurrentNode().getChildren().size();
+
+            JPanel buttonsContainerPanel = new JPanel();
+            buttonsContainerPanel.setLayout(new BorderLayout());
+
+            // like a 5x2 grid, but as many times higher as the number of times there are more than 10 children
+            buttonsContainerPanel.setPreferredSize(new Dimension(this.getWidth(),
+                    (int)(this.getHeight() * goldenRatio * numberOfChildren / 5)));
+
+            buttonsPanel.setLayout(new GridLayout(numberOfChildren, 1));
+            buttonsContainerPanel.add(buttonsPanel, BorderLayout.CENTER);
+
+            JScrollPane buttonsScrollPane = new JScrollPane(buttonsContainerPanel);
+            buttonsScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            buttonsScrollPane.setBackground(viewConfig.getBackgroundColor());
+            buttonsScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+            buttonsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+            mainPanel.add(buttonsScrollPane, "0, 1");
+        } else {
+            buttonsPanel.setLayout(new GridLayout(5, 2));
+            mainPanel.add(buttonsPanel, "0,1");
+        }
+
         for (NodePseudonym pseudonym : nodeManager.getCurrentNode().getChildren()) {
             JButton button = new JButton();
             button.setText(getHtmlText(pseudonym.getPhrase(), viewConfig.getButtonsFontSize()));
@@ -226,6 +256,7 @@ public class ScriptFrame extends DefaultFrame {
                 rollbackLastNodesList.clear();
                 drawCurrentNode();
             });
+            buttonsPanel.setMinimumSize(new Dimension(0, 200));
             buttonsPanel.add(button);
         }
 
