@@ -246,7 +246,8 @@ public class ScriptFrame extends DefaultFrame {
             buttonsScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
             buttonsScrollPane.setBackground(viewConfig.getBackgroundColor());
             buttonsScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-            buttonsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            buttonsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            buttonsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
             mainPanel.add(buttonsScrollPane, "0, 1");
         } else {

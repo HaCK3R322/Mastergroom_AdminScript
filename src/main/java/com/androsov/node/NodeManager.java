@@ -17,19 +17,22 @@ class NodeManagerConfig {
     public static Integer firstNodeId = 1;
     public static String connectionsPath = "resources/connections.json";
     public static String nodesPath = "resources/nodes.json";
+    public static boolean sortNodes = true;
 
     public static void readConfig(String configPath) throws NodeManagerPropertiesException, IOException {
         Map<String, String> propertiesMap = ConfigSerializer.readConfig(configPath);
 
         if(!propertiesMap.containsKey("firstNodeId") ||
                 !propertiesMap.containsKey("connectionsPath") ||
-                !propertiesMap.containsKey("nodesPath")) {
+                !propertiesMap.containsKey("nodesPath") ||
+                !propertiesMap.containsKey("sortNodes")) {
             throw new NodeManagerPropertiesException("Config file is missing properties.");
         }
 
         firstNodeId = Integer.parseInt(propertiesMap.get("firstNodeId"));
         connectionsPath = PathConverter.convertToAbsoluteAppdataFilePath(propertiesMap.get("connectionsPath"));
         nodesPath = PathConverter.convertToAbsoluteAppdataFilePath(propertiesMap.get("nodesPath"));
+        sortNodes = Boolean.parseBoolean(propertiesMap.get("sortNodes"));
     }
 
     public static void saveConfig(String configPath) {
@@ -45,6 +48,7 @@ class NodeManagerConfig {
         propertiesMap.put("firstNodeId", String.valueOf(firstNodeId));
         propertiesMap.put("connectionsPath", connectionsPath);
         propertiesMap.put("nodesPath", nodesPath);
+        propertiesMap.put("sortNodes", String.valueOf(sortNodes));
         return propertiesMap;
     }
 }
@@ -67,6 +71,13 @@ public class NodeManager {
             readProperties(configPath);
             logger.log(Level.INFO, "Starting node deserialization");
             readNodes(NodeManagerConfig.nodesPath, NodeManagerConfig.connectionsPath);
+
+            // for each node sort children by Pseudonym.phrase
+            if (NodeManagerConfig.sortNodes) {
+                for (Node node : nodes) {
+                    node.getChildren().sort(Comparator.comparing(o -> o.getPhrase().toLowerCase()));
+                }
+            }
         } catch (NodeManagerPropertiesException e) {
             String errorMessage = "Error: " + e.getMessage();
             logger.log(Level.WARNING, Arrays.toString(e.getStackTrace()));
