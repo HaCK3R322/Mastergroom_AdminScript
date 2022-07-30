@@ -3,6 +3,7 @@ package com.androsov.gui.frames.settings;
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.ErrorMessageFrame;
 import com.androsov.gui.frames.DefaultFrame;
+import com.androsov.gui.frames.EscClosableDefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class DeleteChildNodeFrame extends DefaultFrame {
+class DeleteChildNodeFrame extends EscClosableDefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
     private final NodeManager nodeManager;
 

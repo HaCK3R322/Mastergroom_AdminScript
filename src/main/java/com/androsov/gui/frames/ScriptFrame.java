@@ -63,6 +63,7 @@ public class ScriptFrame extends DefaultFrame {
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                Logger.getLogger("AdminScriptLogger").info("Script frame closing event was triggered.");
                 if (viewConfig.getSavePos()) {
                     viewConfig.setFrameSizeX(getWidth());
                     viewConfig.setFrameSizeY(getHeight());
@@ -176,6 +177,11 @@ public class ScriptFrame extends DefaultFrame {
     }
     @Override
     public void refresh() {
+        // if node was changed, save it to last nodes list
+        if (!nodeManager.getCurrentNode().equals(lastNodesList.get(lastNodesList.size() - 1))) {
+            lastNodesList.add(nodeManager.getCurrentNode());
+        }
+
         drawCurrentNode();
     }
 

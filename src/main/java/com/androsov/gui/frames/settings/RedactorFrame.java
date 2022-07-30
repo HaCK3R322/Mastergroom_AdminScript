@@ -2,13 +2,14 @@ package com.androsov.gui.frames.settings;
 
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.DefaultFrame;
+import com.androsov.gui.frames.EscClosableDefaultFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class RedactorFrame extends DefaultFrame {
+public class RedactorFrame extends EscClosableDefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
     private final NodeManager nodeManager;
     private final DefaultFrame parentFrame;

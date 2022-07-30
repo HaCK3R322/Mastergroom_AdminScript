@@ -2,10 +2,11 @@ package com.androsov.gui.frames.help;
 
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.DefaultFrame;
+import com.androsov.gui.frames.EscClosableDefaultFrame;
 
 import javax.swing.*;
 
-public class HelpFrame extends DefaultFrame {
+public class HelpFrame extends EscClosableDefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
 
     public HelpFrame(String helpTopic, String helpText) {

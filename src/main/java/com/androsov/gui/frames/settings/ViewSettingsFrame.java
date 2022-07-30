@@ -2,11 +2,12 @@ package com.androsov.gui.frames.settings;
 
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.DefaultFrame;
+import com.androsov.gui.frames.EscClosableDefaultFrame;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ViewSettingsFrame extends DefaultFrame {
+public class ViewSettingsFrame extends EscClosableDefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
 
     // create new frame, that will contain settings and labels. Then, add labels and settings to it.

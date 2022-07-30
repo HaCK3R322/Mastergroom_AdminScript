@@ -3,6 +3,7 @@ package com.androsov.gui.frames.help;
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.gui.frames.ErrorMessageFrame;
+import com.androsov.gui.frames.EscClosableDefaultFrame;
 import info.clearthought.layout.TableLayout;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class HelpRedactorFrame extends DefaultFrame {
+public class HelpRedactorFrame extends EscClosableDefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
 
     public HelpRedactorFrame(DefaultFrame parent, Integer helpNodeId) {
