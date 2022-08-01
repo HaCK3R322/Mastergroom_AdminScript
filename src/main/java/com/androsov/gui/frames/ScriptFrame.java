@@ -7,6 +7,7 @@ import com.androsov.gui.frames.help.HelpManager;
 import com.androsov.gui.frames.help.HelpMenu;
 import com.androsov.gui.frames.help.HelpRedactorFrame;
 import com.androsov.gui.frames.search.SearchFrame;
+import com.androsov.gui.frames.search.SearchPanel;
 import com.androsov.gui.frames.settings.RedactorFrame;
 import com.androsov.gui.frames.settings.ViewSettingsFrame;
 import com.androsov.node.Node;
@@ -185,10 +186,22 @@ public class ScriptFrame extends DefaultFrame {
         drawCurrentNode();
     }
 
+    private void addToMainPanelWithTableLayoutConstraints(Component component, int x, int y) {
+        mainPanel.add(component, x + "," + y);
+    }
     private void drawCurrentNode() {
         mainPanel.removeAll();
 
         this.setBackground(viewConfig.getBackgroundColor());
+
+        double[][] mainPanelSize = getTableSize();
+        mainPanel.setLayout(new TableLayout(mainPanelSize));
+        int currentRow = 0;
+
+        if (viewConfig.getShowSearch()) {
+            addToMainPanelWithTableLayoutConstraints(new SearchPanel(this), 0, currentRow);
+            currentRow++;
+        }
 
         JLabel phraseLabel = new JLabel();
         phraseLabel.setText(getHtmlText(nodeManager.getCurrentNode().getPhrase(), viewConfig.getTextFontSize()));
@@ -226,10 +239,8 @@ public class ScriptFrame extends DefaultFrame {
             phrasePanel.add(phraseLabel);
         }
 
-        double[][] mainPanelSize = {{TableLayout.FILL},{TableLayout.FILL, goldenRatio}};
-        mainPanel.setLayout(new TableLayout(mainPanelSize));
-
-        mainPanel.add(phrasePanel, "0,0");
+        addToMainPanelWithTableLayoutConstraints(phrasePanel, 0, currentRow);
+        currentRow++;
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setOpaque(true);
@@ -255,10 +266,12 @@ public class ScriptFrame extends DefaultFrame {
             buttonsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             buttonsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-            mainPanel.add(buttonsScrollPane, "0, 1");
+            addToMainPanelWithTableLayoutConstraints(buttonsScrollPane, 0, currentRow);
+            currentRow++;
         } else {
             buttonsPanel.setLayout(new GridLayout(5, 2));
-            mainPanel.add(buttonsPanel, "0,1");
+            addToMainPanelWithTableLayoutConstraints(buttonsPanel, 0, currentRow);
+            currentRow++;
         }
 
         for (NodePseudonym pseudonym : nodeManager.getCurrentNode().getChildren()) {
@@ -275,6 +288,15 @@ public class ScriptFrame extends DefaultFrame {
 
         mainPanel.revalidate();
         this.repaint();
+    }
+
+    private double[][] getTableSize() {
+        if(viewConfig.getShowSearch()) {
+            final double searchPanelHeight = 0.05;
+            return new double[][]{{TableLayout.FILL},{searchPanelHeight, TableLayout.FILL, goldenRatio}};
+        } else {
+            return new double[][]{{TableLayout.FILL},{TableLayout.FILL, goldenRatio}};
+        }
     }
 
     private String getHtmlText(String text, Integer fontSize) {

@@ -15,7 +15,6 @@ public class HelpFrame extends EscClosableDefaultFrame {
         this.setTitle(helpTopic);
 
         JTextPane textPanel = new JTextPane();
-        textPanel.setContentType("text/html");
         textPanel.setText(helpText);
         textPanel.setEditable(false);
         textPanel.setOpaque(true);

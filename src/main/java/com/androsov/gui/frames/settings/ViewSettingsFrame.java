@@ -3,6 +3,7 @@ package com.androsov.gui.frames.settings;
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.gui.frames.EscClosableDefaultFrame;
+import info.clearthought.layout.TableLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,38 +17,29 @@ public class ViewSettingsFrame extends EscClosableDefaultFrame {
         this.setTitle("Настройки вида");
         this.setBackground(viewConfig.getBackgroundColor());
 
-        final int numberOfSettings = 5;
+        final int numberOfSettings = 6;
+        final double spaceForObject = (double) 1 / (numberOfSettings + 1); // settings + save button
+        // number of space of objects must be equal to number of settings + 1
+        final double[][] size = {{0.33, TableLayout.FILL},
+                {
+                spaceForObject,
+                spaceForObject,
+                spaceForObject,
+                spaceForObject,
+                spaceForObject,
+                spaceForObject,
+                TableLayout.FILL
+                }};
+
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setLayout(new TableLayout(size));
         this.add(mainPanel);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        JPanel labelsPanel = new JPanel();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = numberOfSettings;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(labelsPanel, gbc);
-        labelsPanel.setLayout(new GridLayout(numberOfSettings, 1));
-
-        JPanel settingsPanel = new JPanel();
-        gbc.gridx = 4;
-        gbc.gridy = 0;
-        gbc.weightx = 6;
-        gbc.weighty = numberOfSettings;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(settingsPanel, gbc);
-        settingsPanel.setLayout(new GridLayout(numberOfSettings, 1));
-        // set border for settings panel
-        settingsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
         // text font setting by slider from 10 to 50
-        JLabel textFontSizeLabel = new JLabel("Размер текста", SwingConstants.LEFT);
+        JLabel textFontSizeLabel = new JLabel("Размер текста");
+        textFontSizeLabel.setVerticalAlignment(SwingConstants.CENTER);
+        textFontSizeLabel.setHorizontalAlignment(SwingConstants.LEFT);
         textFontSizeLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         JSlider textFontSizeSlider = new JSlider(10, 50, viewConfig.getTextFontSize());
         textFontSizeSlider.setMajorTickSpacing(10);
@@ -59,11 +51,13 @@ public class ViewSettingsFrame extends EscClosableDefaultFrame {
             viewConfig.setTextFontSize(textFontSizeSlider.getValue());
             parent.refresh();
         });
-        labelsPanel.add(textFontSizeLabel);
-        settingsPanel.add(textFontSizeSlider);
+        mainPanel.add(textFontSizeLabel, "0, 0");
+        mainPanel.add(textFontSizeSlider, "1, 0");
 
         // buttons font setting by slider from 10 to 50
-        JLabel buttonsFontSizeLabel = new JLabel("Размер текста кнопок", SwingConstants.LEFT);
+        JLabel buttonsFontSizeLabel = new JLabel("Размер текста кнопок");
+        buttonsFontSizeLabel.setVerticalAlignment(SwingConstants.CENTER);
+        buttonsFontSizeLabel.setHorizontalAlignment(SwingConstants.LEFT);
         buttonsFontSizeLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         JSlider buttonsFontSizeSlider = new JSlider(10, 50, viewConfig.getButtonsFontSize());
         buttonsFontSizeSlider.setMajorTickSpacing(10);
@@ -75,11 +69,13 @@ public class ViewSettingsFrame extends EscClosableDefaultFrame {
             viewConfig.setButtonsFontSize(buttonsFontSizeSlider.getValue());
             parent.refresh();
         });
-        labelsPanel.add(buttonsFontSizeLabel);
-        settingsPanel.add(buttonsFontSizeSlider);
+        mainPanel.add(buttonsFontSizeLabel, "0, 1");
+        mainPanel.add(buttonsFontSizeSlider, "1, 1");
 
         // background color setting by radio buttons in button group
-        JLabel backgroundColorLabel = new JLabel("Цвет фона", SwingConstants.LEFT);
+        JLabel backgroundColorLabel = new JLabel("Цвет фона");
+        backgroundColorLabel.setVerticalAlignment(SwingConstants.CENTER);
+        backgroundColorLabel.setHorizontalAlignment(SwingConstants.LEFT);
         backgroundColorLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         // radio group
         ButtonGroup backgroundColorGroup = new ButtonGroup();
@@ -108,13 +104,14 @@ public class ViewSettingsFrame extends EscClosableDefaultFrame {
         } else if (viewConfig.getBackgroundColor().equals(Color.GRAY)) {
             backgroundColorGray.setSelected(true);
         }
-        labelsPanel.add(backgroundColorLabel);
-        settingsPanel.add(backgroundColorButtonsPanel);
-
+        mainPanel.add(backgroundColorLabel, "0, 2");
+        mainPanel.add(backgroundColorButtonsPanel, "1, 2");
 
         // show help check
-        JLabel showHelpLabel = new JLabel("Справка", SwingConstants.LEFT);
-        showHelpLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 30, 0));
+        JLabel showHelpLabel = new JLabel("Справка");
+        showHelpLabel.setVerticalAlignment(SwingConstants.CENTER);
+        showHelpLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        showHelpLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         JCheckBox showHelpCheck = new JCheckBox("Отображать на страничке, если имеется");
         showHelpCheck.setSelected(viewConfig.getShowHelp());
         showHelpCheck.addActionListener(e -> {
@@ -124,13 +121,33 @@ public class ViewSettingsFrame extends EscClosableDefaultFrame {
         JPanel showHelpCheckPanel = new JPanel();
         showHelpCheckPanel.setLayout(new GridLayout(1, 1));
         showHelpCheckPanel.setBackground(Color.WHITE);
-        labelsPanel.add(showHelpLabel);
         showHelpCheckPanel.add(showHelpCheck);
-        settingsPanel.add(showHelpCheckPanel);
+        mainPanel.add(showHelpLabel, "0, 3");
+        mainPanel.add(showHelpCheckPanel, "1, 3");
+
+        // show search check
+        JLabel showSearchLabel = new JLabel("Поиск");
+        showSearchLabel.setVerticalAlignment(SwingConstants.CENTER);
+        showSearchLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        showSearchLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        JCheckBox showSearchCheck = new JCheckBox("Показывать сверху");
+        showSearchCheck.setSelected(viewConfig.getShowSearch());
+        showSearchCheck.addActionListener(e -> {
+            viewConfig.setShowSearch(showSearchCheck.isSelected());
+            parent.refresh();
+        });
+        JPanel showSearchCheckPanel = new JPanel();
+        showSearchCheckPanel.setLayout(new GridLayout(1, 1));
+        showSearchCheckPanel.setBackground(Color.WHITE);
+        showSearchCheckPanel.add(showSearchCheck);
+        mainPanel.add(showSearchLabel, "0, 5");
+        mainPanel.add(showSearchCheckPanel, "1, 5");
 
         // save pos check
-        JLabel savePosLabel = new JLabel("Позиция", SwingConstants.LEFT);
-        savePosLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 30, 0));
+        JLabel savePosLabel = new JLabel("Позиция окна");
+        savePosLabel.setVerticalAlignment(SwingConstants.CENTER);
+        savePosLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        savePosLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         JCheckBox savePosCheckBox = new JCheckBox("Сохранять при закрыти программы");
         savePosCheckBox.setSelected(viewConfig.getSavePos());
         savePosCheckBox.addActionListener(e -> {
@@ -140,9 +157,9 @@ public class ViewSettingsFrame extends EscClosableDefaultFrame {
         JPanel savePosCheckPanel = new JPanel();
         savePosCheckPanel.setLayout(new GridLayout(1, 1));
         savePosCheckPanel.setBackground(Color.WHITE);
-        labelsPanel.add(savePosLabel);
         savePosCheckPanel.add(savePosCheckBox);
-        settingsPanel.add(savePosCheckPanel);
+        mainPanel.add(savePosLabel, "0, 4");
+        mainPanel.add(savePosCheckPanel, "1, 4");
 
         // button to save settings
         JButton saveSettingsButton = new JButton("Сохранить");
@@ -151,19 +168,13 @@ public class ViewSettingsFrame extends EscClosableDefaultFrame {
             parent.refresh();
             this.dispose();
         });
-        gbc.gridx = 0;
-        gbc.gridy = numberOfSettings;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        gbc.gridwidth = 5;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(saveSettingsButton, gbc);
+        mainPanel.add(saveSettingsButton, "0, 6, 1, 6");
 
         // for all components set background color to white
         for (Component component : mainPanel.getComponents()) {
             component.setBackground(Color.WHITE);
         }
+        mainPanel.setBackground(Color.WHITE);
 
         this.setVisible(true);
     }

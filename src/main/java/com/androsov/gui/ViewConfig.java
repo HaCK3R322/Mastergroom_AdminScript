@@ -32,6 +32,7 @@ public class ViewConfig {
     @Getter @Setter private Integer helpFrameSizeX = 500;
     @Getter @Setter private Integer helpFrameSizeY = 500;
     @Getter @Setter private Boolean showHelp = true;
+    @Getter @Setter private Boolean showSearch = true;
 
     private static final String path = "resources/view.config";
     public void readConfig() {
@@ -50,6 +51,7 @@ public class ViewConfig {
             ViewConfig.getInstance().setHelpFrameSizeX(Integer.parseInt(propertiesMap.get("helpFrameSizeX")));
             ViewConfig.getInstance().setHelpFrameSizeY(Integer.parseInt(propertiesMap.get("helpFrameSizeY")));
             ViewConfig.getInstance().setShowHelp(Boolean.parseBoolean(propertiesMap.get("showHelp")));
+            ViewConfig.getInstance().setShowSearch(Boolean.parseBoolean(propertiesMap.get("showSearch")));
         } catch (Exception e) {
             new ErrorMessageFrame("Error reading view config file " + path + ": " + e.getMessage() + ". Default config will be used.");
         }
@@ -78,6 +80,7 @@ public class ViewConfig {
         propertiesMap.put("helpFrameSizeX", String.valueOf(ViewConfig.getInstance().getHelpFrameSizeX()));
         propertiesMap.put("helpFrameSizeY", String.valueOf(ViewConfig.getInstance().getHelpFrameSizeY()));
         propertiesMap.put("showHelp", String.valueOf(ViewConfig.getInstance().getShowHelp()));
+        propertiesMap.put("showSearch", String.valueOf(ViewConfig.getInstance().getShowSearch()));
         return propertiesMap;
     }
 }

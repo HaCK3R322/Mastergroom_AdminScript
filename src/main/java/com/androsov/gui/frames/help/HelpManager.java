@@ -3,6 +3,7 @@ package com.androsov.gui.frames.help;
 import com.androsov.util.PathConverter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,19 +46,23 @@ public class HelpManager {
         Type listType = new com.google.gson.reflect.TypeToken<List<HelpNode>>() {}.getType();
         Gson gsonBuilder = gson.create();
 
-        List<HelpNode> helpNodes = gsonBuilder.fromJson(new FileReader(helpPath), listType);
+        try {
+            List<HelpNode> helpNodes = gsonBuilder.fromJson(new FileReader(helpPath), listType);
+            Integer sequence = 0; // only for collecting all help nodes instead of single node, maybe ill change it later but probably not
+            for (HelpNode helpNode : helpNodes) {
+                if(helpNode == null) continue;
 
-        Integer sequence = 0; // only for collecting all help nodes instead of single node, maybe ill change it later but probably not
-        for (HelpNode helpNode : helpNodes) {
-            if(helpNode == null) continue;
+                if(helpNode.nodeId == null) {
+                    sequence--;
+                    helpMap.put(sequence, helpNode);
+                    continue;
+                }
 
-            if(helpNode.nodeId == null) {
-                sequence--;
-                helpMap.put(sequence, helpNode);
-                continue;
+                helpMap.put(helpNode.getNodeId(), helpNode);
             }
-
-            helpMap.put(helpNode.getNodeId(), helpNode);
+        } catch (JsonSyntaxException e) {
+            Logger.getLogger("AdminScriptLogger").log(Level.SEVERE, "Error reading help file: " + e.getMessage());
+            throw new IOException("Error reading help file: " + e.getMessage());
         }
     }
 
