@@ -35,7 +35,7 @@ public class NodeSerializer {
     }
 
     public static void serialize(List<Node> nodes, String filepathNodes, String filepathPseudonyms) throws IOException {
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
         writeToFile(filepathNodes, gson.toJson(nodes));
 
         List<NodeConnection> nodeConnections = new ArrayList<>();
