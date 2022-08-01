@@ -232,6 +232,7 @@ public class ScriptFrame extends DefaultFrame {
             helpTextScrollPane.setBackground(viewConfig.getBackgroundColor());
             helpTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
             helpTextScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            helpTextScrollPane.getVerticalScrollBar().setUnitIncrement(4);
 
             phrasePanel.add(helpTextScrollPane, "1, 0");
         } else {
@@ -267,11 +268,9 @@ public class ScriptFrame extends DefaultFrame {
             buttonsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
             addToMainPanelWithTableLayoutConstraints(buttonsScrollPane, 0, currentRow);
-            currentRow++;
         } else {
             buttonsPanel.setLayout(new GridLayout(5, 2));
             addToMainPanelWithTableLayoutConstraints(buttonsPanel, 0, currentRow);
-            currentRow++;
         }
 
         for (NodePseudonym pseudonym : nodeManager.getCurrentNode().getChildren()) {
