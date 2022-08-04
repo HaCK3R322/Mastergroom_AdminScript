@@ -68,10 +68,10 @@ public class HelpManager {
 
     public static void save() throws IOException {
         GsonBuilder gson = new GsonBuilder();
-        Gson gsonBuilder = gson.create();
+        Gson gsonBuilder = gson.setPrettyPrinting().create();
 
         String json = gsonBuilder.toJson(helpMap.values());
-        Logger.getLogger("AdminScriptLogger").log(Level.INFO, "Saving help map: " + json);
+        Logger.getLogger("AdminScriptLogger").log(Level.INFO, "Saving help map");
 
         File file = new File(helpPath);
         FileWriter fileWriter = new FileWriter(file);

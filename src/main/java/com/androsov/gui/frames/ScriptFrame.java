@@ -1,6 +1,5 @@
 package com.androsov.gui.frames;
 
-import com.androsov.Main;
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.help.HelpFrame;
 import com.androsov.gui.frames.help.HelpManager;
@@ -9,7 +8,9 @@ import com.androsov.gui.frames.help.HelpRedactorFrame;
 import com.androsov.gui.frames.search.SearchFrame;
 import com.androsov.gui.frames.search.SearchPanel;
 import com.androsov.gui.frames.settings.RedactorFrame;
-import com.androsov.gui.frames.settings.ViewSettingsFrame;
+import com.androsov.gui.frames.settings.view.ShowHelpCheckBoxMenuItem;
+import com.androsov.gui.frames.settings.view.ShowSearchPanelCheckBoxMenuItem;
+import com.androsov.gui.frames.settings.view.ViewStyleSettingsFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
@@ -19,9 +20,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ScriptFrame extends DefaultFrame {
@@ -136,9 +135,14 @@ public class ScriptFrame extends DefaultFrame {
         menuBar.add(searchMenu);
 
         // View
-        JMenuItem settingsMenuItem = new JMenuItem("Вид");
-        settingsMenuItem.addActionListener(e -> new ViewSettingsFrame(this));
-        settingsMenu.add(settingsMenuItem);
+        JMenu viewSettingsMenu = new JMenu("Вид");
+        settingsMenu.add(viewSettingsMenu);
+        JMenuItem openSettings = new JMenuItem("Открыть настройки вида");
+        openSettings.addActionListener(e -> new ViewStyleSettingsFrame(this));
+        viewSettingsMenu.add(openSettings);
+        viewSettingsMenu.add(new JSeparator());
+        viewSettingsMenu.add(new ShowHelpCheckBoxMenuItem(this, "Показывать подсказки"));
+        viewSettingsMenu.add(new ShowSearchPanelCheckBoxMenuItem(this, "Отображать панель поиска"));
 
         // Redactor
         JMenuItem redactorMenuItem = new JMenuItem("Редакитровать эту страницу");

@@ -1,4 +1,4 @@
-package com.androsov.gui.frames.settings;
+package com.androsov.gui.frames.settings.view;
 
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.DefaultFrame;
@@ -8,11 +8,11 @@ import info.clearthought.layout.TableLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class ViewSettingsFrame extends EscClosableDefaultFrame {
+public class ViewStyleSettingsFrame extends EscClosableDefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
 
     // create new frame, that will contain settings and labels. Then, add labels and settings to it.
-    public ViewSettingsFrame(DefaultFrame parent) {
+    public ViewStyleSettingsFrame(DefaultFrame parent) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY(), false);
         this.setTitle("Настройки вида");
         this.setBackground(viewConfig.getBackgroundColor());
