@@ -216,67 +216,61 @@ public class ScriptFrame extends DefaultFrame {
         JPanel phrasePanel = new JPanel();
         phrasePanel.setBackground(viewConfig.getBackgroundColor());
 
-        if(HelpManager.isHelpExists(nodeManager.getCurrentNode().getId()) && viewConfig.getShowHelp()) {
+        if(HelpManager.isHelpExists(nodeManager.getCurrentNode().getId()) && viewConfig.getShowHelp()) { // if help exists, and show help is true
             HelpManager.HelpNode helpNode = HelpManager.getHelpMap().get(nodeManager.getCurrentNode().getId());
             String text = helpNode.getHelpTopic() + ":\n" + helpNode.getHelpText();
 
-            double[][] phrasePanelTableSizes;
-            if(viewConfig.getSeparateHelp() && text.contains(HelpManager.getSeparator())) {
-                phrasePanelTableSizes = new double[][]{{0.33, 0.33, TableLayout.FILL}, {TableLayout.FILL}};
+            if (text.contains(HelpManager.getSeparator()) && viewConfig.getSeparateHelp()) {                                                                            // if
+                int n = text.split(HelpManager.getSeparator()).length;
+                n += 1; // add 1 for phrase
+                int total = n * 2 - 1;
+                double[][] phrasePanelTableSizes = new double[][]{
+                        new double[total], // for space between phrases
+                        new double[]{
+                                TableLayout.FILL
+                        }
+                };
+                phrasePanelTableSizes[0][0] = TableLayout.FILL;
+                for (int i = 1; i < total; i += 2) {
+                    phrasePanelTableSizes[0][i] = 0.01;
+                    phrasePanelTableSizes[0][i + 1] = 1.0 / n;
+                }
                 phrasePanel.setLayout(new TableLayout(phrasePanelTableSizes));
 
-                String text2 = text.substring(text.indexOf(HelpManager.getSeparator()) + HelpManager.getSeparator().length());
-                text = text.substring(0, text.indexOf(HelpManager.getSeparator()));
+                for (int i = 0; i < n; i++) {
+                    if(i == 0) {
+                        phrasePanel.add(phraseLabel, i + ",0");
+                        continue;
+                    }
 
+                    String helpText = text.split(HelpManager.getSeparator())[i - 1]; // get separated help text
 
-                JTextArea separatedHelpTextArea = new JTextArea();
-                separatedHelpTextArea.setWrapStyleWord(true);
-                separatedHelpTextArea.setLineWrap(true);
-                separatedHelpTextArea.setText(text2);
-                separatedHelpTextArea.setFont(new Font("Default", Font.ITALIC, (int)(viewConfig.getTextFontSize() * goldenRatio)));
-                separatedHelpTextArea.setEditable(false);
-                separatedHelpTextArea.setBackground(viewConfig.getBackgroundColor());
-                separatedHelpTextArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-                separatedHelpTextArea.setCaretPosition(0);
+                    JScrollPane helpTextScrollPane = getScrollPaneWithText(helpText);
+                    helpTextScrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                    helpTextScrollPane.getHorizontalScrollBar().setUnitIncrement(4);
 
-                JScrollPane separatedHelpScrollPane = new JScrollPane(separatedHelpTextArea);
-                separatedHelpScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-                separatedHelpScrollPane.setBackground(viewConfig.getBackgroundColor());
-                separatedHelpScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-                separatedHelpScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                separatedHelpScrollPane.getVerticalScrollBar().setUnitIncrement(4);
+                    phrasePanel.add(helpTextScrollPane, (i*2) + ",0");
+                }
+            } else { // if we don't separate help by separator or text doesn't contain separator
+                text = text.replaceAll(HelpManager.getSeparator(), "");
 
-                phrasePanel.add(separatedHelpScrollPane, "2, 0");
-            } else {
-                text = text.replace("///", "");
-                phrasePanelTableSizes = new double[][]{{goldenRatio, TableLayout.FILL}, {TableLayout.FILL}};
-                phrasePanel.setLayout(new TableLayout(phrasePanelTableSizes));
+                phrasePanel.setLayout(new TableLayout(new double[][] {
+                        {goldenRatio, TableLayout.FILL},
+                        {TableLayout.FILL}
+                }));
+                phrasePanel.add(phraseLabel, "0, 0");
+
+                JScrollPane helpTextScrollPane = getScrollPaneWithText(text);
+                helpTextScrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                helpTextScrollPane.getHorizontalScrollBar().setUnitIncrement(4);
+
+                phrasePanel.add(helpTextScrollPane, "1, 0");
             }
-
-            phrasePanel.add(phraseLabel,"0, 0");
-
-            JTextArea helpTextTextArea = new JTextArea();
-            helpTextTextArea.setWrapStyleWord(true);
-            helpTextTextArea.setLineWrap(true);
-            helpTextTextArea.setText(text);
-            helpTextTextArea.setFont(new Font("Default", Font.ITALIC, (int)(viewConfig.getTextFontSize() * goldenRatio)));
-            helpTextTextArea.setEditable(false);
-            helpTextTextArea.setBackground(viewConfig.getBackgroundColor());
-            helpTextTextArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-            helpTextTextArea.setCaretPosition(0);
-
-            JScrollPane helpTextScrollPane = new JScrollPane(helpTextTextArea);
-            helpTextScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-            helpTextScrollPane.setBackground(viewConfig.getBackgroundColor());
-            helpTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-            helpTextScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            helpTextScrollPane.getVerticalScrollBar().setUnitIncrement(4);
-
-            phrasePanel.add(helpTextScrollPane, "1, 0");
         } else {
             phrasePanel.setLayout(new GridLayout(1, 1));
             phrasePanel.add(phraseLabel);
         }
+
 
         addToMainPanelWithTableLayoutConstraints(phrasePanel, 0, currentRow);
         currentRow++;
@@ -341,4 +335,21 @@ public class ScriptFrame extends DefaultFrame {
         return "<html><body><p style='font-size:" + fontSize + "'>" + text + "</p></body></html>";
     }
 
+    private JScrollPane getScrollPaneWithText(String text) {
+        JTextArea textArea = new JTextArea();
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+        textArea.setText(text);
+        textArea.setFont(new Font("Default", Font.ITALIC, (int)(viewConfig.getTextFontSize() * goldenRatio)));
+        textArea.setEditable(false);
+        textArea.setBackground(viewConfig.getBackgroundColor());
+        textArea.setCaretPosition(0);
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setBackground(viewConfig.getBackgroundColor());
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        return scrollPane;
+    }
 }
