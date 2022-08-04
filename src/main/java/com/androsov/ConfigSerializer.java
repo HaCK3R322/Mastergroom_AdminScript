@@ -58,7 +58,6 @@ public class ConfigSerializer {
         }
         FileWriter writer = new FileWriter(file);
         for (Map.Entry<String, String> entry : config.entrySet()) {
-            logger.log(Level.INFO, "Config file write: " + entry.getKey() + "=" + entry.getValue());
             writer.write(entry.getKey() + "=" + entry.getValue() + "\n");
         }
         writer.close();

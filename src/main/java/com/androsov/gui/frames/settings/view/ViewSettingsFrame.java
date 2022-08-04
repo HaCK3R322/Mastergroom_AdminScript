@@ -3,16 +3,17 @@ package com.androsov.gui.frames.settings.view;
 import com.androsov.gui.ViewConfig;
 import com.androsov.gui.frames.DefaultFrame;
 import com.androsov.gui.frames.EscClosableDefaultFrame;
+import com.androsov.gui.frames.help.HelpManager;
 import info.clearthought.layout.TableLayout;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ViewStyleSettingsFrame extends EscClosableDefaultFrame {
+public class ViewSettingsFrame extends EscClosableDefaultFrame {
     private static final ViewConfig viewConfig = ViewConfig.getInstance();
 
     // create new frame, that will contain settings and labels. Then, add labels and settings to it.
-    public ViewStyleSettingsFrame(DefaultFrame parent) {
+    public ViewSettingsFrame(DefaultFrame parent) {
         super(viewConfig.getSettingsFrameSizeX(), viewConfig.getSettingsFrameSizeY(), false);
         this.setTitle("Настройки вида");
         this.setBackground(viewConfig.getBackgroundColor());
@@ -108,29 +109,36 @@ public class ViewStyleSettingsFrame extends EscClosableDefaultFrame {
         mainPanel.add(backgroundColorButtonsPanel, "1, 2");
 
         // show help check
-        JLabel showHelpLabel = new JLabel("Справка");
-        showHelpLabel.setVerticalAlignment(SwingConstants.CENTER);
-        showHelpLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        showHelpLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        JCheckBox showHelpCheck = new JCheckBox("Отображать на страничке, если имеется");
+        JLabel helpChecksLabel = new JLabel("Справка");
+        helpChecksLabel.setVerticalAlignment(SwingConstants.CENTER);
+        helpChecksLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        helpChecksLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        JCheckBox showHelpCheck = new JCheckBox("Показывать на страничке, если имеется");
         showHelpCheck.setSelected(viewConfig.getShowHelp());
         showHelpCheck.addActionListener(e -> {
             viewConfig.setShowHelp(showHelpCheck.isSelected());
             parent.refresh();
         });
-        JPanel showHelpCheckPanel = new JPanel();
-        showHelpCheckPanel.setLayout(new GridLayout(1, 1));
-        showHelpCheckPanel.setBackground(Color.WHITE);
-        showHelpCheckPanel.add(showHelpCheck);
-        mainPanel.add(showHelpLabel, "0, 3");
-        mainPanel.add(showHelpCheckPanel, "1, 3");
+        JCheckBox separateHelp = new JCheckBox("Разделять подсказки по \"" + HelpManager.getSeparator() + "\"");
+        separateHelp.setSelected(viewConfig.getShowHelp());
+        separateHelp.addActionListener(e -> {
+            viewConfig.setSeparateHelp(separateHelp.isSelected());
+            parent.refresh();
+        });
+        JPanel helpChecksPanel = new JPanel();
+        helpChecksPanel.setLayout(new TableLayout(new double[][]{{TableLayout.FILL},{0.25, 0.25, 0.25, 0.25}}));
+        helpChecksPanel.setBackground(Color.WHITE);
+        helpChecksPanel.add(showHelpCheck, "0, 1");
+        helpChecksPanel.add(separateHelp, "0, 2");
+        mainPanel.add(helpChecksLabel, "0, 3");
+        mainPanel.add(helpChecksPanel, "1, 3");
 
         // show search check
         JLabel showSearchLabel = new JLabel("Поиск");
         showSearchLabel.setVerticalAlignment(SwingConstants.CENTER);
         showSearchLabel.setHorizontalAlignment(SwingConstants.LEFT);
         showSearchLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        JCheckBox showSearchCheck = new JCheckBox("Показывать сверху");
+        JCheckBox showSearchCheck = new JCheckBox("Отображать сверху");
         showSearchCheck.setSelected(viewConfig.getShowSearch());
         showSearchCheck.addActionListener(e -> {
             viewConfig.setShowSearch(showSearchCheck.isSelected());
@@ -140,8 +148,8 @@ public class ViewStyleSettingsFrame extends EscClosableDefaultFrame {
         showSearchCheckPanel.setLayout(new GridLayout(1, 1));
         showSearchCheckPanel.setBackground(Color.WHITE);
         showSearchCheckPanel.add(showSearchCheck);
-        mainPanel.add(showSearchLabel, "0, 5");
-        mainPanel.add(showSearchCheckPanel, "1, 5");
+        mainPanel.add(showSearchLabel, "0, 4");
+        mainPanel.add(showSearchCheckPanel, "1, 4");
 
         // save pos check
         JLabel savePosLabel = new JLabel("Позиция окна");
@@ -158,8 +166,8 @@ public class ViewStyleSettingsFrame extends EscClosableDefaultFrame {
         savePosCheckPanel.setLayout(new GridLayout(1, 1));
         savePosCheckPanel.setBackground(Color.WHITE);
         savePosCheckPanel.add(savePosCheckBox);
-        mainPanel.add(savePosLabel, "0, 4");
-        mainPanel.add(savePosCheckPanel, "1, 4");
+        mainPanel.add(savePosLabel, "0, 5");
+        mainPanel.add(savePosCheckPanel, "1, 5");
 
         // button to save settings
         JButton saveSettingsButton = new JButton("Сохранить");

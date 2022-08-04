@@ -21,6 +21,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class HelpManager {
+    @Getter
+    @Setter
+    private static String separator = "\n///\n"; // separator for two parts of help text
     @ToString
     @AllArgsConstructor
     public static class HelpNode {

@@ -14,6 +14,7 @@ public class ShowSearchPanelCheckBoxMenuItem extends JCheckBoxMenuItem {
          this.setSelected(viewConfig.getShowSearch());
          this.addActionListener(e -> {
              viewConfig.setShowSearch(this.isSelected());
+             viewConfig.saveConfig();
              parent.refresh();
          });
      }

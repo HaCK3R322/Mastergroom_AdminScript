@@ -13,6 +13,7 @@ public class ShowHelpCheckBoxMenuItem extends JCheckBoxMenuItem {
         this.setSelected(viewConfig.getShowHelp());
         this.addActionListener(e -> {
             viewConfig.setShowHelp(this.isSelected());
+            viewConfig.saveConfig();
             parent.refresh();
         });
     }

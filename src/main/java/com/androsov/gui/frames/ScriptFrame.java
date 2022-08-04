@@ -8,9 +8,10 @@ import com.androsov.gui.frames.help.HelpRedactorFrame;
 import com.androsov.gui.frames.search.SearchFrame;
 import com.androsov.gui.frames.search.SearchPanel;
 import com.androsov.gui.frames.settings.RedactorFrame;
+import com.androsov.gui.frames.settings.view.SeparateHelpCheckBoxMenuItem;
 import com.androsov.gui.frames.settings.view.ShowHelpCheckBoxMenuItem;
 import com.androsov.gui.frames.settings.view.ShowSearchPanelCheckBoxMenuItem;
-import com.androsov.gui.frames.settings.view.ViewStyleSettingsFrame;
+import com.androsov.gui.frames.settings.view.ViewSettingsFrame;
 import com.androsov.node.Node;
 import com.androsov.node.NodeManager;
 import com.androsov.node.NodePseudonym;
@@ -49,11 +50,10 @@ public class ScriptFrame extends DefaultFrame {
         menuBar = new JMenuBar();
         menuBar.setBackground(Color.WHITE);
         this.setJMenuBar(menuBar);
-        configureMenuBarContent();
 
         nodeManager.setCurrentNode(nodeManager.getFirstNode());
         lastNodesList.add(nodeManager.getCurrentNode());
-        drawCurrentNode();
+        renderCurrentNode();
 
         addNodeKeyMovementsToFrame();
 
@@ -100,21 +100,22 @@ public class ScriptFrame extends DefaultFrame {
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                     goToPreviousClickedNode();
-                    drawCurrentNode();
+                    renderCurrentNode();
                 }
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     goCloserToLastClickedNode();
-                    drawCurrentNode();
+                    renderCurrentNode();
                 }
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     goToStartNode();
-                    drawCurrentNode();
+                    renderCurrentNode();
                 }
             }
         });
     }
 
-    private void configureMenuBarContent() {
+    private void reconfigureMenuBar() {
+        menuBar.removeAll();
         // add menu "Settings"
         JMenu settingsMenu = new JMenu("Настройки");
         settingsMenu.setBackground(Color.WHITE);
@@ -129,7 +130,7 @@ public class ScriptFrame extends DefaultFrame {
         JMenuItem goToStartItem = new JMenuItem("Перейти к началу");
         goToStartItem.addActionListener(e -> {
             goToStartNode();
-            drawCurrentNode();
+            renderCurrentNode();
         });
         searchMenu.add(goToStartItem);
         menuBar.add(searchMenu);
@@ -138,11 +139,12 @@ public class ScriptFrame extends DefaultFrame {
         JMenu viewSettingsMenu = new JMenu("Вид");
         settingsMenu.add(viewSettingsMenu);
         JMenuItem openSettings = new JMenuItem("Открыть настройки вида");
-        openSettings.addActionListener(e -> new ViewStyleSettingsFrame(this));
+        openSettings.addActionListener(e -> new ViewSettingsFrame(this));
         viewSettingsMenu.add(openSettings);
         viewSettingsMenu.add(new JSeparator());
-        viewSettingsMenu.add(new ShowHelpCheckBoxMenuItem(this, "Показывать подсказки"));
         viewSettingsMenu.add(new ShowSearchPanelCheckBoxMenuItem(this, "Отображать панель поиска"));
+        viewSettingsMenu.add(new ShowHelpCheckBoxMenuItem(this, "Показывать подсказки"));
+        viewSettingsMenu.add(new SeparateHelpCheckBoxMenuItem(this, "Разделять подсказки по \"" + HelpManager.getSeparator() + "\""));
 
         // Redactor
         JMenuItem redactorMenuItem = new JMenuItem("Редакитровать эту страницу");
@@ -187,13 +189,13 @@ public class ScriptFrame extends DefaultFrame {
             lastNodesList.add(nodeManager.getCurrentNode());
         }
 
-        drawCurrentNode();
+        renderCurrentNode();
     }
 
     private void addToMainPanelWithTableLayoutConstraints(Component component, int x, int y) {
         mainPanel.add(component, x + "," + y);
     }
-    private void drawCurrentNode() {
+    private void renderCurrentNode() { // render current node
         mainPanel.removeAll();
 
         this.setBackground(viewConfig.getBackgroundColor());
@@ -215,23 +217,55 @@ public class ScriptFrame extends DefaultFrame {
         phrasePanel.setBackground(viewConfig.getBackgroundColor());
 
         if(HelpManager.isHelpExists(nodeManager.getCurrentNode().getId()) && viewConfig.getShowHelp()) {
-            double[][] phrasePanelTableSizes = {{goldenRatio, TableLayout.FILL}, {TableLayout.FILL}};
-            phrasePanel.setLayout(new TableLayout(phrasePanelTableSizes));
+            HelpManager.HelpNode helpNode = HelpManager.getHelpMap().get(nodeManager.getCurrentNode().getId());
+            String text = helpNode.getHelpTopic() + ":\n" + helpNode.getHelpText();
+
+            double[][] phrasePanelTableSizes;
+            if(viewConfig.getSeparateHelp() && text.contains(HelpManager.getSeparator())) {
+                phrasePanelTableSizes = new double[][]{{0.33, 0.33, TableLayout.FILL}, {TableLayout.FILL}};
+                phrasePanel.setLayout(new TableLayout(phrasePanelTableSizes));
+
+                String text2 = text.substring(text.indexOf(HelpManager.getSeparator()) + HelpManager.getSeparator().length());
+                text = text.substring(0, text.indexOf(HelpManager.getSeparator()));
+
+
+                JTextArea separatedHelpTextArea = new JTextArea();
+                separatedHelpTextArea.setWrapStyleWord(true);
+                separatedHelpTextArea.setLineWrap(true);
+                separatedHelpTextArea.setText(text2);
+                separatedHelpTextArea.setFont(new Font("Default", Font.ITALIC, (int)(viewConfig.getTextFontSize() * goldenRatio)));
+                separatedHelpTextArea.setEditable(false);
+                separatedHelpTextArea.setBackground(viewConfig.getBackgroundColor());
+                separatedHelpTextArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+                separatedHelpTextArea.setCaretPosition(0);
+
+                JScrollPane separatedHelpScrollPane = new JScrollPane(separatedHelpTextArea);
+                separatedHelpScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+                separatedHelpScrollPane.setBackground(viewConfig.getBackgroundColor());
+                separatedHelpScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+                separatedHelpScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                separatedHelpScrollPane.getVerticalScrollBar().setUnitIncrement(4);
+
+                phrasePanel.add(separatedHelpScrollPane, "2, 0");
+            } else {
+                text = text.replace("///", "");
+                phrasePanelTableSizes = new double[][]{{goldenRatio, TableLayout.FILL}, {TableLayout.FILL}};
+                phrasePanel.setLayout(new TableLayout(phrasePanelTableSizes));
+            }
 
             phrasePanel.add(phraseLabel,"0, 0");
 
-            HelpManager.HelpNode helpNode = HelpManager.getHelpMap().get(nodeManager.getCurrentNode().getId());
-            String text = helpNode.getHelpTopic() + ":\n" + helpNode.getHelpText();
-            JTextArea helpTextPane = new JTextArea();
-            helpTextPane.setWrapStyleWord(true);
-            helpTextPane.setLineWrap(true);
-            helpTextPane.setText(text);
-            helpTextPane.setFont(new Font("Default", Font.ITALIC, (int)(viewConfig.getTextFontSize() * goldenRatio)));
-            helpTextPane.setEditable(false);
-            helpTextPane.setBackground(viewConfig.getBackgroundColor());
-            helpTextPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            JTextArea helpTextTextArea = new JTextArea();
+            helpTextTextArea.setWrapStyleWord(true);
+            helpTextTextArea.setLineWrap(true);
+            helpTextTextArea.setText(text);
+            helpTextTextArea.setFont(new Font("Default", Font.ITALIC, (int)(viewConfig.getTextFontSize() * goldenRatio)));
+            helpTextTextArea.setEditable(false);
+            helpTextTextArea.setBackground(viewConfig.getBackgroundColor());
+            helpTextTextArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            helpTextTextArea.setCaretPosition(0);
 
-            JScrollPane helpTextScrollPane = new JScrollPane(helpTextPane);
+            JScrollPane helpTextScrollPane = new JScrollPane(helpTextTextArea);
             helpTextScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
             helpTextScrollPane.setBackground(viewConfig.getBackgroundColor());
             helpTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -284,12 +318,13 @@ public class ScriptFrame extends DefaultFrame {
                 nodeManager.setCurrentNode(pseudonym.getNode());
                 lastNodesList.add(nodeManager.getCurrentNode());
                 rollbackLastNodesList.clear();
-                drawCurrentNode();
+                renderCurrentNode();
             });
             buttonsPanel.add(button);
         }
 
         mainPanel.revalidate();
+        reconfigureMenuBar();
         this.repaint();
     }
 
