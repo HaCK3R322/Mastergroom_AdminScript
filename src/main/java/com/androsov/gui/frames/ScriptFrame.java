@@ -252,7 +252,7 @@ public class ScriptFrame extends DefaultFrame {
                     phrasePanel.add(helpTextScrollPane, (i*2) + ",0");
                 }
             } else { // if we don't separate help by separator or text doesn't contain separator
-                text = text.replaceAll(HelpManager.getSeparator(), "");
+                text = text.replaceAll(HelpManager.getSeparator(), "\n\n");
 
                 phrasePanel.setLayout(new TableLayout(new double[][] {
                         {goldenRatio, TableLayout.FILL},
